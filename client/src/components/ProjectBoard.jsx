@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
 import './ProjectBoard.scss';
@@ -58,71 +58,85 @@ const onDragEnd = (emission, columns, setColumns) => {
   });
 };
 
-const ProjectBoard = () => {
+const ProjectBoard = (props) => {
   const [columns, setColumns] = useState(dummyColumnData);
+  const [githubUsername, setGithubUsername] = useState('');
+
+  useEffect(() => {
+    const { location, history } = props;
+
+    if (!location.state) {
+      history.push('/login');
+    }
+    setGithubUsername(location.state.username);
+  }, [props]);
 
   return (
-    <div className="root">
-      <DragDropContext
-        onDragEnd={(emission) => onDragEnd(emission, columns, setColumns)}
-      >
-        {Object.entries(columns).map(([id, columnData]) => {
-          return (
-            <div key={id} className="column__container">
-              <h1>{columnData.name}</h1>
-              <Droppable droppableId={id}>
-                {/* Droppable gives us provided props and current state in a callback function */}
-                {(provided, snapshot) => {
-                  return (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className={
-                        snapshot.isDraggingOver
-                          ? 'column__droppable column__droppable--is-dragging-over'
-                          : 'column__droppable'
-                      }
-                    >
-                      {columnData.items.map((item, index) => {
-                        return (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id}
-                            index={index}
-                          >
-                            {/* Draggable gives us provided props and current state in a callback function */}
-                            {(provided, snapshot) => {
-                              return (
-                                <div
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  ref={provided.innerRef}
-                                  style={{
-                                    ...provided.draggableProps.style,
-                                  }}
-                                  className={
-                                    snapshot.isDragging
-                                      ? 'item__draggable item__draggable--is-dragging'
-                                      : 'item__draggable'
-                                  }
-                                >
-                                  {item.content}
-                                </div>
-                              );
-                            }}
-                          </Draggable>
-                        );
-                      })}
-                      {/* React element that is used to increase available space in a Droppable during a drag when needed */}
-                      {provided.placeholder}
-                    </div>
-                  );
-                }}
-              </Droppable>
-            </div>
-          );
-        })}
-      </DragDropContext>
+    <div className="dashboard__root">
+      {' '}
+      <h1>hi, {githubUsername}</h1>
+      <div className="tasks__container">
+        <DragDropContext
+          onDragEnd={(emission) => onDragEnd(emission, columns, setColumns)}
+        >
+          {Object.entries(columns).map(([id, columnData]) => {
+            return (
+              <div key={id} className="column__container">
+                <h1>{columnData.name}</h1>
+                <Droppable droppableId={id}>
+                  {/* Droppable gives us provided props and current state in a callback function */}
+                  {(provided, snapshot) => {
+                    return (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={
+                          snapshot.isDraggingOver
+                            ? 'column__droppable column__droppable--is-dragging-over'
+                            : 'column__droppable'
+                        }
+                      >
+                        {columnData.items.map((item, index) => {
+                          return (
+                            <Draggable
+                              key={item.id}
+                              draggableId={item.id}
+                              index={index}
+                            >
+                              {/* Draggable gives us provided props and current state in a callback function */}
+                              {(provided, snapshot) => {
+                                return (
+                                  <div
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    ref={provided.innerRef}
+                                    style={{
+                                      ...provided.draggableProps.style,
+                                    }}
+                                    className={
+                                      snapshot.isDragging
+                                        ? 'item__draggable item__draggable--is-dragging'
+                                        : 'item__draggable'
+                                    }
+                                  >
+                                    {item.content}
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
+                        {/* React element that is used to increase available space in a Droppable during a drag when needed */}
+                        {provided.placeholder}
+                      </div>
+                    );
+                  }}
+                </Droppable>
+              </div>
+            );
+          })}
+        </DragDropContext>
+      </div>
     </div>
   );
 };
