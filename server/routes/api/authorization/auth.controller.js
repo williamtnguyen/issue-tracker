@@ -1,6 +1,6 @@
 const fs = require('fs');
 const express = require('express');
-const userRouter = express.Router();
+const authRouter = express.Router();
 const axios = require('axios');
 
 const getAccessToken = async (authCode, clientId, clientSecret) => {
@@ -34,7 +34,7 @@ const getGithubUserInfo = async (accessToken) => {
   return apiResponse.data;
 };
 
-userRouter.post('/', async (req, res) => {
+authRouter.post('/access-token', async (req, res) => {
   console.log(req.body);
   const { authCode } = req.body;
   const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = JSON.parse(
@@ -49,7 +49,15 @@ userRouter.post('/', async (req, res) => {
   console.log('Access Token received', accessToken);
 
   const githubUserInfo = await getGithubUserInfo(accessToken);
-  res.status(200).json(githubUserInfo);
+  console.log(githubUserInfo);
+
+  // Send HTTPOnly cookie containing accessToken & authenticated user's username as response
+  res
+    .status(200)
+    .cookie('accessToken', accessToken, {
+      httpOnly: true,
+    })
+    .json(githubUserInfo);
 });
 
-module.exports = userRouter;
+module.exports = authRouter;

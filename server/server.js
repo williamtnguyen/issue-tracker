@@ -1,10 +1,14 @@
 const express = require('express');
 const server = express();
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 // Middleware for getting input from client-side
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
+
+// Middleware for reading HTTPOnly Cookies from incoming requests
+server.use(cookieParser());
 
 // Serves all routes under prefix 'localhost:5000/api/*'
 const routes = require('./routes/api/');
