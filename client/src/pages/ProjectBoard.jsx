@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../App';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
+import Navbar from '../components/material-ui/Navbar';
 import './ProjectBoard.scss';
 
 const dummyItemData = [
@@ -59,21 +61,19 @@ const onDragEnd = (emission, columns, setColumns) => {
 };
 
 const ProjectBoard = (props) => {
+  const { isAuthenticated, githubUsername } = useContext(UserContext);
   const [columns, setColumns] = useState(dummyColumnData);
-  const [githubUsername, setGithubUsername] = useState('');
 
   useEffect(() => {
-    const { location, history } = props;
-
-    if (!location.state) {
+    const { history } = props;
+    if (!isAuthenticated) {
       history.push('/login');
     }
-    setGithubUsername(location.state.username);
-  }, [props]);
+  }, [props, isAuthenticated]);
 
   return (
     <div className="dashboard__root">
-      {' '}
+      <Navbar />
       <h1>hi, {githubUsername}</h1>
       <div className="tasks__container">
         <DragDropContext

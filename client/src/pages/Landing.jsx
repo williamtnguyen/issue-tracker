@@ -1,33 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../App';
 import axios from 'axios';
 import { Button, CircularProgress } from '@material-ui/core';
 import './Landing.scss';
 
 const Landing = (props) => {
+  // Whether or not user has authorized our application to use their information
   const [hasAuthorized, setHasAuthorized] = useState(false);
+  // Whether or not the use has successfully authenticated (state to be used globally)
+  const { isAuthenticated, setIsAuthenticated, setGithubUsername } = useContext(UserContext);
 
   useEffect(() => {
-    const { search } = window.location;
-    if (search !== '') {
-      setHasAuthorized(true);
-      const params = new URLSearchParams(search);
-      const authCode = params.get('code');
-
-      fetchAndSetUserInfo(authCode);
+    if (isAuthenticated) {
+      window.location.pathname = '/dashboard';
+    } else {
+      const { search } = window.location;
+      if (search !== '') {
+        setHasAuthorized(true);
+        const params = new URLSearchParams(search);
+        const authCode = params.get('code');
+  
+        fetchAndSetUserInfo(authCode);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAndSetUserInfo = async (authCode) => {
-    const githubUserInfo = await axios.post('/api/users', {
+    // Gets information about the user & sets an HTTPOnly Cookie in browser for all subsequent requests
+    const githubUserInfo = await axios.post('/api/auth/access-token', {
       authCode: authCode,
     });
 
-    // Redirect here as a side effect because asynchronosity is whacky if we try to make functions pure
-    props.history.push({
-      pathname: '/dashboard',
-      state: { username: githubUserInfo.data.login },
-    });
+    setIsAuthenticated(true);
+    setGithubUsername(githubUserInfo.data.login);
+    localStorage.setItem('githubUsername', githubUserInfo.data.login);
+
+    props.history.push('/dashboard');
   };
 
   return (
