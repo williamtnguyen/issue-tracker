@@ -1,4 +1,14 @@
 .landing__root {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+img {
+  height: 100vh;
+  margin-left: -50px;
+}
+
+.center__content {
   height: 100vh;
   display: flex;
   flex-direction: column;

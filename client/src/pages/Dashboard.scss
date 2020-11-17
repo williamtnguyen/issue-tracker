@@ -1,0 +1,24 @@
+.dashboard__root {
+  height: 100vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.github__avatar {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.follow__counts {
+  display: flex;
+  justify-content: space-around;
+}
+
+.team__crud-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
