@@ -67,6 +67,22 @@ const isEmpty = (object) => {
   return Object.keys(object).length === 0;
 };
 
+/* Updates githubId of User row if it is null */
+const updateGithubIdOnFirstLogin = async (githubUsername, githubId) => {
+  const params = {
+    TableName: 'Users',
+    Key: { githubUsername },
+    ReturnValues: 'ALL_NEW',
+    UpdateExpression: 'SET githubId = if_not_exists(githubId, :githubId)',
+    ExpressionAttributeValues: {
+      ':githubId': githubId,
+    },
+  };
+
+  const updateResult = await dynamoDB.update(params).promise();
+  return updateResult;
+};
+
 /**
  * Exchanges authorization code for an access token & writes user info to DynamoDB
  */
@@ -100,10 +116,12 @@ authRouter.post('/access-token', async (req, res) => {
       });
     }
   } else {
-    console.log('Existing user logged in', {
-      githubUsername: githubUserInfo.login,
-      githubId: githubUserInfo.id,
-    });
+    const updateResult = await updateGithubIdOnFirstLogin(
+      githubUserInfo.login,
+      githubUserInfo.id
+    );
+
+    console.log('Existing user logged in', updateResult);
   }
 
   // Send HTTPOnly cookie containing accessToken & authenticated user's username as response

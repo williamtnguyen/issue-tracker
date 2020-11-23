@@ -35,6 +35,7 @@ const Landing = (props) => {
       authCode,
     });
 
+    // Set global state and put something in local storage to persist user sessions
     setIsAuthenticated(true);
     setGithubUsername(githubUserInfo.data.login);
     localStorage.setItem('githubUsername', githubUserInfo.data.login);

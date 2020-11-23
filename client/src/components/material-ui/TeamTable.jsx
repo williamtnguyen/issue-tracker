@@ -19,19 +19,25 @@ const useStyles = makeStyles({
     fontSize: '16px',
     fontWeight: 'bold',
   },
+  teamRow: {
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#f4f4f4',
+    },
+  },
 });
 
-function createData(
+const createData = (
   teamName,
   totalProjects,
   totalTasks,
   assignedTasks,
   completedTasks
-) {
+) => {
   return { teamName, totalProjects, totalTasks, assignedTasks, completedTasks };
-}
+};
 
-const DashboardTable = (props) => {
+const TeamTable = (props) => {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
 
@@ -39,11 +45,15 @@ const DashboardTable = (props) => {
     if (props.teams) {
       const teams = [];
       props.teams.forEach((teamName) => {
-        teams.push(createData(teamName, 1, 16, 5, 3));
+        teams.push(createData(teamName, 0, 0, 0, 0));
       });
       setRows(teams);
     }
   }, [props.teams]);
+
+  const goToTeamPage = (teamName) => {
+    props.history.push(`/team/${teamName}`);
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -67,7 +77,11 @@ const DashboardTable = (props) => {
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.teamName}>
+            <TableRow
+              key={row.teamName}
+              className={classes.teamRow}
+              onClick={() => goToTeamPage(row.teamName)}
+            >
               <TableCell component="th" scope="row">
                 {row.teamName}
               </TableCell>
@@ -83,4 +97,4 @@ const DashboardTable = (props) => {
   );
 };
 
-export default DashboardTable;
+export default TeamTable;

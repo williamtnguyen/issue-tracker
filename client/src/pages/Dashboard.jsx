@@ -3,7 +3,7 @@ import axios from 'axios';
 import { UserContext } from '../App';
 
 import Navbar from '../components/material-ui/Navbar';
-import DashboardTable from '../components/material-ui/DashboardTable';
+import TeamTable from '../components/material-ui/TeamTable';
 import { Container, Button, CircularProgress } from '@material-ui/core';
 import './Dashboard.scss';
 
@@ -18,14 +18,13 @@ const Dashboard = (props) => {
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
-    const { history } = props;
     if (!isAuthenticated) {
       history.push('/login');
     } else {
       fetchUserInfo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props, isAuthenticated]);
+  }, [history, isAuthenticated]);
 
   const fetchUserInfo = async () => {
     const apiResponse = await axios.get(`/api/users/${githubUsername}`);
@@ -74,7 +73,7 @@ const Dashboard = (props) => {
           </div>
           <div>
             <h1>Current Teams</h1>
-            <DashboardTable teams={teams} />
+            <TeamTable teams={teams} history={history} />
             <div className="team__crud-buttons">
               <Button
                 onClick={goToCreateTeamForm}
