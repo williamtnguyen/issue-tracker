@@ -38,6 +38,16 @@ const getGithubUserInfo = async (accessToken) => {
   return apiResponse.data;
 };
 
+const doesUserExistInDB = async (githubUsername) => {
+  const params = {
+    TableName: 'Users',
+    Key: { githubUsername },
+  };
+
+  const lookup = await dynamoDB.get(params).promise();
+  return lookup.Item !== undefined && lookup.Item !== null ? true : false;
+};
+
 /* If user already exists, returns information about existing item. Otherwise creates the user and returns {} */
 const createUserInDB = async (githubUsername, githubId) => {
   const params = {
@@ -64,7 +74,7 @@ authRouter.post('/access-token', async (req, res) => {
   console.log(req.body);
   const { authCode } = req.body;
   const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = JSON.parse(
-    fs.readFileSync(__dirname + '/../../../config/secrets.json')
+    fs.readFileSync(__dirname + '/../../config/secrets.json')
   );
 
   const accessToken = await getAccessToken(
@@ -75,18 +85,25 @@ authRouter.post('/access-token', async (req, res) => {
   console.log('Access Token received', accessToken);
 
   const githubUserInfo = await getGithubUserInfo(accessToken);
-  const putResult = await createUserInDB(
-    githubUserInfo.login,
-    githubUserInfo.id
-  );
 
-  if (isEmpty(putResult)) {
-    console.log('New users first time logging in', {
+  const doesExist = await doesUserExistInDB(githubUserInfo.login);
+  if (!doesExist) {
+    const putResult = await createUserInDB(
+      githubUserInfo.login,
+      githubUserInfo.id
+    );
+
+    if (isEmpty(putResult)) {
+      console.log('New users first time logging in', {
+        githubUsername: githubUserInfo.login,
+        githubId: githubUserInfo.id,
+      });
+    }
+  } else {
+    console.log('Existing user logged in', {
       githubUsername: githubUserInfo.login,
       githubId: githubUserInfo.id,
     });
-  } else {
-    console.log('Existing user logged in', putResult);
   }
 
   // Send HTTPOnly cookie containing accessToken & authenticated user's username as response
