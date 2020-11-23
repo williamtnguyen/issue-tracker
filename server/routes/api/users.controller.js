@@ -28,11 +28,11 @@ usersRouter.get('/:githubUsername', async (req, res) => {
   const { githubUsername } = req.params;
 
   if (!cookies.accessToken) {
-    res.status(400).json({ message: 'Access token was not sent in cookie' });
+    res.status(404).json({ message: 'Access token was not sent in cookie' });
   }
 
   if (!githubUsername) {
-    res.status(400).json({ message: 'Github username was not sent' });
+    res.status(404).json({ message: 'Github username was not sent' });
   }
 
   const githubApiInfo = await getGithubUserInfo(cookies.accessToken);
