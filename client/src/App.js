@@ -14,6 +14,7 @@ import Team from './pages/Team';
 import AddMemberForm from './pages/forms/AddMemberForm';
 import AddProjectForm from './pages/forms/AddProjectForm';
 import ProjectBoard from './pages/ProjectBoard';
+import TaskToGithub from './pages/Test/TaskToGithub';
 
 export const UserContext = createContext();
 
@@ -48,6 +49,7 @@ const App = () => {
           <Route exact path="/team/:teamName" component={Team} />
         </Switch>
         <Route exact path="/project/:projectId" component={ProjectBoard} />
+        <Route exact path="/testTask" component={TaskToGithub} />
       </UserContext.Provider>
     </Router>
   );
