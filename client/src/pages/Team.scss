@@ -1,0 +1,25 @@
+.team__root {
+  height: 100vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.loading__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin-bottom: 30px;
+}
+
+.team__list {
+  border: 2px lightgrey solid;
+  border-radius: 5px;
+  width: 400px;
+  margin-bottom: 20px;
+}
+
+.team__projects {
+  margin-bottom: 20px;
+}

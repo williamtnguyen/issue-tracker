@@ -1,10 +1,10 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { UserContext } from '../App';
+import { UserContext } from '../../App';
 import axios from 'axios';
 
 import { TextField, Button } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import Navbar from '../components/material-ui/Navbar';
+import Navbar from '../../components/material-ui/Navbar';
 import './JoinTeamForm.scss';
 
 const JoinTeamForm = (props) => {
