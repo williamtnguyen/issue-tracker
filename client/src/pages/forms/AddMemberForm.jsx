@@ -39,7 +39,9 @@ const AddMemberForm = (props) => {
         goBackToTeamPage();
       }
     } catch (error) {
-      setNotExistsError(true); // should never happen
+      // should never happen ATM
+      // TODO: (maybe) add checking if githubUsername actually exists
+      setNotExistsError(true);
     }
   };
 

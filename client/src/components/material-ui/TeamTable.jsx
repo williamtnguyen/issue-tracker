@@ -45,7 +45,7 @@ const TeamTable = (props) => {
     if (props.teams) {
       const teams = [];
       props.teams.forEach((teamName) => {
-        teams.push(createData(teamName, 0, 0, 0, 0));
+        teams.push(createData(teamName, -1, -1, -1, -1));
       });
       setRows(teams);
     }

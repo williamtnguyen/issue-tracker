@@ -10,7 +10,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import './Team.scss';
 
 const Team = (props) => {
-  const { isAuthenticated } = useContext(UserContext);
+  const { isAuthenticated, githubUsername } = useContext(UserContext);
   const { history, match } = props;
   const [teamMembers, setTeamMembers] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -23,19 +23,39 @@ const Team = (props) => {
       history.push('/dashboard');
     } else {
       fetchTeamInfo();
-      console.log('was triggered');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [history, isAuthenticated]);
 
   const fetchTeamInfo = async () => {
-    const apiResponse = await axios.get(`/api/teams/${match.params.teamName}`);
-    const { data } = apiResponse;
+    const teamsApiResponse = await axios.get(
+      `/api/teams/${match.params.teamName}`
+    );
+    const { data } = teamsApiResponse;
 
-    // Assuming team will always have at least 1 member
+    // Assuming team will always have at least 1 member, and projects can be null or array
     setTeamMembers(data.members);
     if (data.projects) {
-      setProjects(data.projects);
+      // For each project name in teamsApiResponse, make a call to projects API to gather task counts for table
+      const projectRows = [];
+      for (const projectName of data.projects) {
+        const projectsApiResponse = await axios.get(
+          `/api/projects/${projectName}`
+        );
+        const projectInfo = {
+          name: projectName,
+          totalTasks: projectsApiResponse.data.issues.length,
+          assignedTasks: projectsApiResponse.data.issues.filter((issueObject) =>
+            issueObject.assignees.includes(githubUsername)
+          ).length,
+          completedTasks: projectsApiResponse.data.issues.filter(
+            (issueObject) => issueObject.status === 'DONE'
+          ).length,
+        };
+        projectRows.push(projectInfo);
+      }
+
+      setProjects(projectRows);
     }
     setIsLoadingData(false);
   };
@@ -47,6 +67,13 @@ const Team = (props) => {
   const goToAddMemberForm = () => {
     history.push({
       pathname: '/team/add-member',
+      state: { teamName: match.params.teamName },
+    });
+  };
+
+  const goToAddProjectForm = () => {
+    history.push({
+      pathname: '/team/add-project',
       state: { teamName: match.params.teamName },
     });
   };
@@ -82,9 +109,15 @@ const Team = (props) => {
           <div>
             <h1>Projects</h1>
             <section className="team__projects">
-              <ProjectTable projects={projects} />
+              {!isLoadingData && (
+                <ProjectTable projects={projects} history={history} />
+              )}
             </section>
-            <Button variant="contained" color="secondary">
+            <Button
+              onClick={goToAddProjectForm}
+              variant="contained"
+              color="secondary"
+            >
               Add New Project
             </Button>
           </div>
