@@ -42,16 +42,23 @@ const Team = (props) => {
         const projectsApiResponse = await axios.get(
           `/api/projects/${projectName}`
         );
-        const projectInfo = {
-          name: projectName,
-          totalTasks: projectsApiResponse.data.issues.length,
-          assignedTasks: projectsApiResponse.data.issues.filter((issueObject) =>
-            issueObject.assignees.includes(githubUsername)
-          ).length,
-          completedTasks: projectsApiResponse.data.issues.filter(
-            (issueObject) => issueObject.status === 'DONE'
-          ).length,
-        };
+        const projectInfo = projectsApiResponse.data.issues
+          ? {
+              name: projectName,
+              totalTasks: projectsApiResponse.data.issues.length,
+              assignedTasks: projectsApiResponse.data.issues.filter(
+                (issueObject) => issueObject.assignees.includes(githubUsername)
+              ).length,
+              completedTasks: projectsApiResponse.data.issues.filter(
+                (issueObject) => issueObject.status === 'DONE'
+              ).length,
+            }
+          : {
+              name: projectName,
+              totalTasks: 0,
+              assignedTasks: 0,
+              completedTasks: 0,
+            };
         projectRows.push(projectInfo);
       }
 
