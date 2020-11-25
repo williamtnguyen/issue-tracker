@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import {
-  Input,
   TextField,
   Select,
   MenuItem,
   InputLabel,
-  Button 
+  Button, 
+  FormControl,
+  Box
 } from '@material-ui/core';
 import MomentUtils from '@date-io/moment';
 import { Autocomplete } from '@material-ui/lab';
@@ -16,14 +17,15 @@ import './TaskToGithub.scss'
 
 const TaskToGithub = (props) => {
   const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState('');
   const [assignees, setAssignees] = useState([]);
   const [reporters, setReporters] = useState([]);
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
   const [showPriority, setShowPriority] = useState(false);
+  const [priority, setPriority] = useState('');
+  const [showStatus, setShowStatus] = useState(false);
+  const [status, setStatus] = useState('');
   const [teamMembers, setTeamMembers] = useState([]);
-
   
   // Get team members in a project 
   useEffect(() => {
@@ -34,109 +36,143 @@ const TaskToGithub = (props) => {
     getTeam();
   }, []);
 
-  const requestBody = {
+  const dummyProps = {
     owner: '1234momo', 
     repo: 'test', 
-    title: 'test1', 
-    body: 'this is a test'
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     console.log('call backend');
-    const params = {
-      ...requestBody,
-      title,
+    const body = {
+      ...dummyProps,
+      title: 'test2', 
+      description: 'this is a test from app',
       assignees,
       reporters,
       priority,
-      description,
       dueDate
     }
-    const githubCall = await axios.post('/api/tasks/create', params);
-    console.log(githubCall);
+    const githubCall = await axios.post('/api/tasks/create', dummyProps);
   }
 
   return (
-    <div className="form__container">
+    <Box className='form__container'>
       <form
         className='task__form' 
         onSubmit={(e) => handleSubmit(e)} 
         noValidate 
-        autoComplete="off">
-        <Input 
-          placeholder='Title' 
-          inputProps={{ 'aria-label': 'description' }} 
-          onChange = {(e) => setTitle(e.target.value)}
-        />
-        <Autocomplete
-          multiple
-          options={teamMembers}
-          getOptionLabel={(member) => member}
-          defaultValue={teamMembers[0]}
-          onChange={(e, members) => setAssignees(members)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Assignees"
-              placeholder="Team member"
-            />
-          )}
-        />
-        <Autocomplete
-          multiple
-          options={teamMembers}
-          getOptionLabel={(member) => member}
-          defaultValue={teamMembers[0]}
-          onChange={(e, members) => setReporters(members)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Reporters"
-              placeholder="Team member"
-            />
-          )}
-        />
-        <InputLabel id="Priorty">Priority</InputLabel>
-        <Select
-          labelId="Priorty"
-          open={showPriority}
-          onClose={() => setShowPriority(false)}
-          onOpen={() => setShowPriority(true)}
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value='Todo'>Todo</MenuItem>
-          <MenuItem value='In progress'>In progress</MenuItem>
-          <MenuItem value='Finished'>Finished</MenuItem>
-        </Select>
-        <Input 
-          placeholder='Description' 
-          inputProps={{ 'aria-label': 'description' }} 
-          onChange = {(e) => setDescription(e.target.value)}
-        />
-        <MuiPickersUtilsProvider utils={MomentUtils}>
-          <KeyboardDatePicker
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            margin="normal"
-            label="Date picker inline"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
+        autoComplete='off'
+      >
+        <Box mb={2}>
+          <TextField 
+            label='Title' 
+            inputProps={{ 'aria-label': 'description' }} 
+            onChange = {(e) => setTitle(e.target.value)}
+            fullWidth 
+            required
           />
-        </MuiPickersUtilsProvider>
+        </Box>
+
+        <Box mb={2}>
+          <Autocomplete
+            multiple
+            options={teamMembers}
+            getOptionLabel={(member) => member}
+            onChange={(e, members) => setAssignees(members)}
+            renderInput={params => (
+              <TextField
+                {...params}
+                variant='standard'
+                label='Assignees'
+                placeholder='Team member'
+              />
+            )}
+          />
+        </Box>
+
+        <Box mb={2}>
+          <Autocomplete
+            multiple
+            options={teamMembers}
+            getOptionLabel={(member) => member}
+            onChange={(e, members) => setReporters(members)}
+            renderInput={params => (
+              <TextField
+                {...params}
+                variant='standard'
+                label='Reporters'
+                placeholder='Team member'
+              />
+            )}
+          />
+        </Box>
+
+        <Box mb={2}>
+          <FormControl fullWidth>
+            <InputLabel id='priorty'>Priority</InputLabel>
+            <Select
+              labelId='priorty'
+              open={showPriority}
+              onClose={() => setShowPriority(false)}
+              onOpen={() => setShowPriority(true)}
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <MenuItem value='Low'>Low</MenuItem>
+              <MenuItem value='Medium'>Medium</MenuItem>
+              <MenuItem value='High'>High</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box mb={2}>
+          <FormControl fullWidth>
+            <InputLabel id='status'>Status</InputLabel>
+            <Select
+              labelId='status'
+              open={showStatus}
+              onClose={() => setShowStatus(false)}
+              onOpen={() => setShowStatus(true)}
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <MenuItem value='Todo'>Todo</MenuItem>
+              <MenuItem value='In progress'>In progress</MenuItem>
+              <MenuItem value='Finished'>Finished</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box mb={2}>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <KeyboardDatePicker
+              autoOk
+              variant='inline'
+              format='MM/dd/yyyy'
+              margin='normal'
+              label='Due Date'
+              value={dueDate}
+              onChange={(date) => setDueDate(date)}
+              fullWidth
+            />
+          </MuiPickersUtilsProvider>
+        </Box>
+
+        <Box mb={2}>
+          <TextField
+            multiline
+            variant='outlined'
+            label='Description' 
+            inputProps={{ 'aria-label': 'description' }} 
+            onChange = {(e) => setDescription(e.target.value)}
+            fullWidth
+          />
+        </Box>
+
         <Button type='submit' variant='outlined' color='primary'>Submit</Button>
       </form>
-    </div>
+    </Box>
   )
 }
 
