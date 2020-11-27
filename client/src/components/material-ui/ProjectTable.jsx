@@ -18,18 +18,14 @@ const useStyles = makeStyles({
   mainTableCell: {
     fontSize: '16px',
     fontWeight: 'bold',
-    teamRow: {
-      cursor: 'pointer',
-    },
+  },
+  projectRow: {
+    cursor: 'pointer',
     '&:hover': {
       backgroundColor: '#f4f4f4',
     },
   },
 });
-
-const createData = (projectName, totalTasks, assignedTasks, completedTasks) => {
-  return { projectName, totalTasks, assignedTasks, completedTasks };
-};
 
 const ProjectTable = (props) => {
   const classes = useStyles();
@@ -37,16 +33,12 @@ const ProjectTable = (props) => {
 
   useEffect(() => {
     if (props.projects) {
-      const projects = [];
-      props.projects.forEach((projectName) => {
-        projects.push(createData(projectName, 0, 0, 0, 0));
-      });
-      setRows(projects);
+      setRows(props.projects);
     }
   }, [props.projects]);
 
-  const goToTeamPage = (teamName) => {
-    props.history.push(`/team/${teamName}`);
+  const goToProjectPage = (projectName) => {
+    props.history.push(`/project/${projectName}`);
   };
 
   return (
@@ -71,14 +63,13 @@ const ProjectTable = (props) => {
         <TableBody>
           {rows.map((row) => (
             <TableRow
-              key={row.teamName}
-              className={classes.teamRow}
-              onClick={() => goToTeamPage(row.teamName)}
+              key={row.name}
+              className={classes.projectRow}
+              onClick={() => goToProjectPage(row.name)}
             >
               <TableCell component="th" scope="row">
-                {row.teamName}
+                {row.name}
               </TableCell>
-              <TableCell align="right">{row.totalProjects}</TableCell>
               <TableCell align="right">{row.totalTasks}</TableCell>
               <TableCell align="right">{row.assignedTasks}</TableCell>
               <TableCell align="right">{row.completedTasks}</TableCell>

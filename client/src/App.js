@@ -12,6 +12,7 @@ import CreateTeamForm from './pages/forms/CreateTeamForm';
 import JoinTeamForm from './pages/forms/JoinTeamForm';
 import Team from './pages/Team';
 import AddMemberForm from './pages/forms/AddMemberForm';
+import AddProjectForm from './pages/forms/AddProjectForm';
 import ProjectBoard from './pages/ProjectBoard';
 
 export const UserContext = createContext();
@@ -43,6 +44,7 @@ const App = () => {
           <Route exact path="/team/create" component={CreateTeamForm} />
           <Route exact path="/team/join" component={JoinTeamForm} />
           <Route exact path="/team/add-member" component={AddMemberForm} />
+          <Route exact path="/team/add-project" component={AddProjectForm} />
           <Route exact path="/team/:teamName" component={Team} />
         </Switch>
         <Route exact path="/project/:projectId" component={ProjectBoard} />

@@ -59,10 +59,7 @@ const joinMemberToTeamInDB = async (teamName, joiningUsername) => {
     Key: { teamName },
     ReturnValues: 'ALL_NEW',
     UpdateExpression:
-      'set members = list_append(if_not_exists(#members, :empty_list), :new_member)',
-    ExpressionAttributeNames: {
-      '#members': 'members',
-    },
+      'set members = list_append(if_not_exists(members, :empty_list), :new_member)',
     ExpressionAttributeValues: {
       ':empty_list': [],
       ':new_member': [joiningUsername],
@@ -204,7 +201,11 @@ teamsRouter.get('/:teamName', async (req, res) => {
     const teamInfo = await getTeamInformation(teamName);
     res
       .status(200)
-      .json({ teamName: teamInfo.teamName, members: teamInfo.members });
+      .json({
+        teamName: teamInfo.teamName,
+        members: teamInfo.members,
+        projects: teamInfo.projects,
+      });
   } else {
     res.status(400).json({ message: 'Team name does not exist' });
   }
