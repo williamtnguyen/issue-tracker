@@ -8,14 +8,16 @@ import {
   InputLabel,
   Button, 
   FormControl,
-  Box
+  Box,
+  Snackbar
 } from '@material-ui/core';
 import MomentUtils from '@date-io/moment';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete, Alert } from '@material-ui/lab';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import './TaskToGithub.scss'
+import './CreateTaskForm.scss'
 
 const TaskToGithub = (props) => {
+  const { history } = props;
   const [title, setTitle] = useState('');
   const [assignees, setAssignees] = useState([]);
   const [reporters, setReporters] = useState([]);
@@ -25,35 +27,57 @@ const TaskToGithub = (props) => {
   const [priority, setPriority] = useState('');
   const [showStatus, setShowStatus] = useState(false);
   const [status, setStatus] = useState('');
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
   
   // Get team members in a project 
   useEffect(() => {
     const getTeam = async () => {
       const response = await axios.get('/api/teams/CMPE 172');
+      // const response = await axios.get(`/api/teams/props.teamName`);
       setTeamMembers(response.data.members);
     }
     getTeam();
   }, []);
 
   const dummyProps = {
-    owner: '1234momo', 
-    repo: 'test', 
+    title: 'test from code',
+    owner: 'gary-chang-2', 
+    repoName: 'test',
+    description: 'this issue was published from code' 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('call backend');
-    const body = {
+    const formData = {
       ...dummyProps,
-      title: 'test2', 
-      description: 'this is a test from app',
+      title, 
+      description,
       assignees,
       reporters,
       priority,
-      dueDate
+      dueDate,
+      status
     }
-    const githubCall = await axios.post('/api/tasks/create', dummyProps);
+    const createTaskResult = await axios.post('/api/tasks/create', {...dummyProps});
+    if (createTaskResult.status === 200) {
+      // history.push({
+      //   pathname: `/team/${teamname}`,
+      //   state: { refreshFlag: true }
+      // });
+      console.log('success');
+    } else {
+      return (
+        <Snackbar 
+          open={() => setShowSnackbar(true)} 
+          autoHideDuration={5000} 
+          onClose={() => setShowSnackbar(false)}>
+          <Alert onClose={() => setShowSnackbar(false)} severity="error">
+            Task can't be added at the moment
+          </Alert>
+        </Snackbar>
+      );
+    }
   }
 
   return (

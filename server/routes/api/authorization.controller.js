@@ -18,6 +18,7 @@ const getAccessToken = async (authCode, clientId, clientSecret) => {
     requestBody
   );
 
+  console.log(apiResponse.data);
   const params = new URLSearchParams(apiResponse.data);
   return params.get('access_token');
 };

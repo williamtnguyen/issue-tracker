@@ -14,7 +14,7 @@ import Team from './pages/Team';
 import AddMemberForm from './pages/forms/AddMemberForm';
 import AddProjectForm from './pages/forms/AddProjectForm';
 import ProjectBoard from './pages/ProjectBoard';
-import TaskToGithub from './pages/Test/TaskToGithub';
+import TaskToGithub from './pages/forms/CreateTaskForm';
 
 export const UserContext = createContext();
 

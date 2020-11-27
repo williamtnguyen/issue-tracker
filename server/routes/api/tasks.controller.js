@@ -7,60 +7,66 @@ const S3 = new AWS.S3();
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Creates a new issue on github
-const createIssueOnGit = async (req, accessToken) => {
-    const payload = {
-        title: req.body.title, 
-        body: req.body.description
-    };
-    // const authHeaders = {
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Token ${accessToken}`,
-    //     }
-    // };
-    try {
-        const apiResponse = await axios.post(
-            `http://api.github.com/repos/${req.body.owner}/${req.body.repo}/issues`, {
-                body: payload
-            }
-        );
-        console.log(apiResponse);
-        console.log(apiResponse.status);
-        return apiResponse.data;
-    }
-    catch(error) {
-        return error.response.sendStatus;
-    }
-};
-
-const getRepoCreator = () => {
-    
-};
-
-// Adds a new task to dynamoDB
-const createTaskOnDB = async (req, issueId) => {
-    const {
-        projectName,
+const createIssueOnGit = async (req) => {
+    const { 
         title, 
-        assignees, 
-        reporters, 
-        priority, 
-        description, 
-        attachments, 
-        dueDate 
+        description,
+        owner,
+        repoName
     } = req.body;
 
-    const getCreatorResult = await getRepoCreator();
-    const addToProjectResult = await addTaskToProject(projectName, issueId);
-    const addUserTasksResult = assignees.length > 0 && await addUserTasks(assignees, issueId);
-    return {
-        getCreatorResult,
-        addToProjectResult,
-        addUserTasksResult
+    const requestBody = {
+        title: title, 
+        body: description
     };
+    const authHeaders = {
+        headers: {
+            Authorization: `token ${req.cookies.accessToken}`
+        }
+    };
+
+    // Problem with token scopes
+    console.log(req.cookies.accessToken);
+    console.log(`https://api.github.com/repos/${owner}/${repoName}/issues`);
+    const apiResponse = await axios.post(
+        `https://api.github.com/repos/${owner}/${repoName}/issues`, 
+        requestBody,
+        authHeaders
+    );
+    console.log(apiResponse.status);
+    console.log(apiResponse.data);
+    return apiResponse.data;
 };
 
-const addTaskToProject = async (projectName, issueId) => {
+
+// Adds a new task to dynamoDB
+const createTaskOnDB = async (reqBody, githubIssue) => {
+    const task = {
+        ...reqBody,
+        taskId: githubIssue.id,
+        creationTimeStamp: githubIssue.created_at,
+        updatedTimeStamp: githubIssue.updated_at
+    };
+
+    const addToTasksResult = await addToTasks(task);
+    const addToProjectsResult = await addToProjects(reqBody.projectName, );
+    const addUserTasksResult = assignees.length > 0 && await addUserTasks(assignees, issueId);
+    return { addToTasksResult, addToProjectResult, addUserTasksResult };
+};
+
+const addToTasks = (task) => {
+    const taskParams = {
+        TableName: 'Tasks',
+        Item: task,
+        ReturnValues: 'ALL_OLD'
+    };
+
+    const createTaskResult = await dynamoDB.put(taskParams).promise();
+    return createTaskResult;
+};
+
+// Take from project.controller
+const addToProjects = async (projectName, issueInfo) => {
     const taskParams = {
         TableName: 'Tasks',
         Key: { taskId: issueId },
@@ -77,7 +83,7 @@ const addTaskToProject = async (projectName, issueId) => {
     return addTaskResult;
 }
 
-const addUserTasks = (githubUsernames, issueId) => {
+const addUserTasks = async (githubUsernames, issueId) => {
     const taskParams = {
         TableName: 'Tasks',
         Key: { taskId: issueId },
@@ -91,16 +97,9 @@ const addUserTasks = (githubUsernames, issueId) => {
 };
 
 taskRouter.post('/create', async (req, res) => {
-    try {
-        // const githubResult = await createIssueOnGit(req, req.cookies.accessToken);
-        // const dynamoResult = await createTaskOnDB(req, githubResult.id);
-        const dynamoResult = await createTaskOnDB(req, 1);
-        // res.status(200).json({ id: githubResult.id });
-        res.status(200).json({ message: 'works!' });
-    } catch (error) {
-        res.status(400).json({ message: 'Unable to create an issue' })
-    }
-
+    const githubResult = await createIssueOnGit(req);
+    const dynamoResult = await createTaskOnDB(req.body, githubResult.data);
+    res.status(200);
 });
 
 
