@@ -42,8 +42,8 @@ const TaskToGithub = (props) => {
 
   const dummyProps = {
     title: 'test from code',
-    owner: 'gary-chang-2', 
-    repoName: 'test',
+    owner: 'williamtnguyen', 
+    repoName: 'issue-tracker',
     description: 'this issue was published from code' 
   };
 

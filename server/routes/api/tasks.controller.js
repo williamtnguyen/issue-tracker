@@ -21,18 +21,20 @@ const createIssueOnGit = async (req) => {
     };
     const authHeaders = {
         headers: {
-            Authorization: `token ${req.cookies.accessToken}`
+            Authorization: `token c3cf6ec1c1adf3a70e18c9c6ef951d22ced0f05e`
         }
     };
 
     // Problem with token scopes
     console.log(req.cookies.accessToken);
     console.log(`https://api.github.com/repos/${owner}/${repoName}/issues`);
+
     const apiResponse = await axios.post(
         `https://api.github.com/repos/${owner}/${repoName}/issues`, 
         requestBody,
         authHeaders
     );
+
     console.log(apiResponse.status);
     console.log(apiResponse.data);
     return apiResponse.data;
@@ -54,7 +56,7 @@ const createTaskOnDB = async (reqBody, githubIssue) => {
     return { addToTasksResult, addToProjectResult, addUserTasksResult };
 };
 
-const addToTasks = (task) => {
+const addToTasks = async (task) => {
     const taskParams = {
         TableName: 'Tasks',
         Item: task,
@@ -97,7 +99,7 @@ const addUserTasks = async (githubUsernames, issueId) => {
 };
 
 taskRouter.post('/create', async (req, res) => {
-    const githubResult = await createIssueOnGit(req);
+    // const githubResult = await createIssueOnGit(req);
     const dynamoResult = await createTaskOnDB(req.body, githubResult.data);
     res.status(200);
 });
