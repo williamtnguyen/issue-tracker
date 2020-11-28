@@ -33,18 +33,19 @@ const TaskToGithub = (props) => {
   // Get team members in a project 
   useEffect(() => {
     const getTeam = async () => {
-      const response = await axios.get('/api/teams/CMPE 172');
+      // TODO: teamName should be passed by props or context
+      const response = await axios.get('/api/teams/Theta Tau');
       // const response = await axios.get(`/api/teams/props.teamName`);
       setTeamMembers(response.data.members);
     }
     getTeam();
   }, []);
 
+  // should be passed by props or context
   const dummyProps = {
-    title: 'test from code',
-    owner: 'williamtnguyen', 
-    repoName: 'issue-tracker',
-    description: 'this issue was published from code' 
+    projectName: 'FastatoFastQ',
+    owner: 'gary-chang-2', 
+    repoName: 'test',
   };
 
   const handleSubmit = async (e) => {
@@ -59,13 +60,12 @@ const TaskToGithub = (props) => {
       dueDate,
       status
     }
-    const createTaskResult = await axios.post('/api/tasks/create', {...dummyProps});
+    const createTaskResult = await axios.post('/api/tasks/create', {...formData});
     if (createTaskResult.status === 200) {
       // history.push({
       //   pathname: `/team/${teamname}`,
       //   state: { refreshFlag: true }
       // });
-      console.log('success');
     } else {
       return (
         <Snackbar 

@@ -54,7 +54,7 @@ const Landing = (props) => {
           <Button
             variant="contained"
             color="secondary"
-            href="https://github.com/login/oauth/authorize?client_id=Iv1.ab6ee8ba954385ee&scope=repo%20public_repo%20repo:status"
+            href="https://github.com/login/oauth/authorize?client_id=4890cae2dd24c037cfe7&scope=repo%20public_repo%20repo:status"
           >
             Sign in with Github
           </Button>
