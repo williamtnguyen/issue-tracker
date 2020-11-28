@@ -195,7 +195,7 @@ projectsRouter.post('/create', async (req, res) => {
 });
 
 /**
- * Gets all projects for a respective team
+ * Gets necessary information for a respective project
  */
 projectsRouter.get('/:projectName', async (req, res) => {
   const { projectName } = req.params;

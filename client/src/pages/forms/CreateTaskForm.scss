@@ -1,17 +1,16 @@
-.task__form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 30%;
+.create__task__root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-.form__container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+.task__form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 #Priority {
-    margin-top: 2em;
+  margin-top: 2em;
 }
