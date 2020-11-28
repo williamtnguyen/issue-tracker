@@ -72,7 +72,7 @@ const ProjectBoard = (props) => {
   }, [props, isAuthenticated]);
 
   return (
-    <div className="dashboard__root">
+    <div className="project__root">
       <Navbar />
       <h1>hi, {githubUsername}</h1>
       <div className="tasks__container">
