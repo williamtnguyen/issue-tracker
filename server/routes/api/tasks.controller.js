@@ -6,13 +6,20 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Creates a new issue on github
 const createIssueOnGit = async (req) => {
-  const { title, assignees, reporters, description, owner, projectName } = req.body;
+  const {
+    title,
+    assignees,
+    reporters,
+    description,
+    owner,
+    projectName,
+  } = req.body;
 
   const requestBody = {
     title: title,
-		body: description,
-		assignees: assignees, 
-		reporters: reporters
+    body: description,
+    assignees: assignees,
+    reporters: reporters,
   };
   const authHeaders = {
     headers: {
@@ -131,7 +138,40 @@ const getTasksInProject = async (projectName) => {
   };
 
   const projectInfo = await dynamoDB.get(params).promise();
-  return projectInfo.Item.issues ? projectInfo.Item.issues : [];
+  return projectInfo.Item.issues ? projectInfo.Item.issues : {};
+};
+
+// Updates the status of a task with taskId in project with projectName
+const updateTaskStatus = async (projectName, taskId, newStatus) => {
+  const taskParams = {
+    TableName: 'Tasks',
+    Key: { taskId },
+    ReturnValues: 'ALL_NEW',
+    UpdateExpression: 'SET #status = :status',
+    ExpressionAttributeNames: {
+      '#status': 'status',
+    },
+    ExpressionAttributeValues: {
+      ':status': newStatus,
+    },
+  };
+  const projectParams = {
+    TableName: 'Projects',
+    Key: { projectName },
+    ReturnValues: 'ALL_NEW',
+    UpdateExpression: 'SET issues.#taskId.#status = :newStatus',
+    ExpressionAttributeNames: {
+      '#taskId': taskId,
+      '#status': 'status',
+    },
+    ExpressionAttributeValues: {
+      ':newStatus': newStatus,
+    },
+  };
+
+  const updateTaskResult = await dynamoDB.update(taskParams).promise();
+  const updateProjectResult = await dynamoDB.update(projectParams).promise();
+  return { updateTaskResult, updateProjectResult };
 };
 
 const isEmpty = (object) => {
@@ -178,6 +218,33 @@ taskRouter.get('/:projectName', async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ message: 'Cannot get tasks for project' });
+  }
+});
+
+/**
+ * Changes the status of a task as a result of a 'dragEnd' event on frontend
+ */
+taskRouter.post('/update-status', async (req, res) => {
+  const { projectName, taskId, newStatus } = req.body;
+
+  if (!projectName || !taskId) {
+    res.status(400).json({ message: 'Project name or task ID not sent' });
+  }
+
+  try {
+    const updateTaskResult = await updateTaskStatus(
+      projectName,
+      taskId,
+      newStatus
+    );
+    if (
+      !isEmpty(updateTaskResult.updateTaskResult) &&
+      !isEmpty(updateTaskResult.updateProjectResult)
+    ) {
+      res.status(200).json(updateTaskResult);
+    }
+  } catch (error) {
+    res.status(400).json(error);
   }
 });
 
