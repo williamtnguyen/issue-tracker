@@ -50,7 +50,7 @@ const getRepositoryInfo = async (githubUsername, projectName) => {
     // Reduce the API response to an array of only needed info
     const repositoryIssues = githubIssues.data.map((issueObject) => {
       return {
-        id: issueObject.id,
+        taskId: issueObject.id,
         title: issueObject.title,
         description: issueObject.body,
         status: TaskProgressEnum.TO_DO,

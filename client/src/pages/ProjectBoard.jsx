@@ -57,7 +57,7 @@ const ProjectBoard = (props) => {
       fetchTasksInProject();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, isAuthenticated]);
+  }, [history, isAuthenticated, props]);
 
   const fetchTasksInProject = async () => {
     try {
@@ -142,8 +142,8 @@ const ProjectBoard = (props) => {
                           {tasks.map((task, index) => {
                             return (
                               <Draggable
-                                key={task.id}
-                                draggableId={String(task.id)}
+                                key={task.taskId}
+                                draggableId={String(task.taskId)}
                                 index={index}
                               >
                                 {/* Draggable gives us provided props and current state in a callback function */}

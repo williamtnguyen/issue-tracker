@@ -6,11 +6,13 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Creates a new issue on github
 const createIssueOnGit = async (req) => {
-  const { title, description, owner, projectName } = req.body;
+  const { title, assignees, reporters, description, owner, projectName } = req.body;
 
   const requestBody = {
     title: title,
-    body: description,
+		body: description,
+		assignees: assignees, 
+		reporters: reporters
   };
   const authHeaders = {
     headers: {
