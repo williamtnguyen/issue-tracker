@@ -2,12 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { UserContext, TeamContext } from '../App';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { v4 as uuid } from 'uuid';
 
 import Navbar from '../components/material-ui/Navbar';
 import { ButtonGroup, Button } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import './ProjectBoard.scss';
+import TaskModal from '../components/material-ui/TaskModal';
 
 const statusMap = Object.freeze({
   TO_DO: 'To Do',
@@ -47,6 +47,8 @@ const ProjectBoard = (props) => {
   const [assignedTasksView, setAssignedTasksView] = useState(true);
   const [allTasks, setAllTasks] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState({});
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -149,20 +151,32 @@ const ProjectBoard = (props) => {
                                 {/* Draggable gives us provided props and current state in a callback function */}
                                 {(provided, snapshot) => {
                                   return (
-                                    <div
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      ref={provided.innerRef}
-                                      style={{
-                                        ...provided.draggableProps.style,
-                                      }}
-                                      className={
-                                        snapshot.isDragging
-                                          ? 'item__draggable item__draggable--is-dragging'
-                                          : 'item__draggable'
-                                      }
-                                    >
-                                      {task.title}
+                                    <div className="card">
+                                      <div
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        ref={provided.innerRef}
+                                        style={{
+                                          ...provided.draggableProps.style,
+                                        }}
+                                        className={
+                                          snapshot.isDragging
+                                            ? 'item__draggable item__draggable--is-dragging'
+                                            : 'item__draggable'
+                                        }
+                                        onClick={(e) => {
+                                          setShowModal(!showModal)
+                                          setSelectedTask(task)
+                                        }}
+                                      >
+                                        {task.title}
+                                      </div>
+                                      {showModal && 
+                                        <TaskModal 
+                                          showModal={showModal}
+                                          setShowModal={setShowModal}
+                                          selectedTask={selectedTask}
+                                        />}
                                     </div>
                                   );
                                 }}

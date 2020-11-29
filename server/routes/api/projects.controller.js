@@ -114,7 +114,7 @@ const createProjectInDB = async (repositoryInfo, teamName) => {
       const taskParams = {
         TableName: 'Tasks',
         Item: {
-          taskId: issueObject.id,
+          taskId: issueObject.taskId,
           title: issueObject.title,
           description: issueObject.description,
           status: issueObject.status,
