@@ -73,12 +73,14 @@ const addToProjects = async (projectName, task) => {
     TableName: 'Projects',
     Key: { projectName },
     ReturnValues: 'ALL_NEW',
-    UpdateExpression:
-      'SET issues = list_append(if_not_exists(issues, :empty_list), :new_task)',
-    ExpressionAttributeValues: {
-      ':empty_list': [],
-      ':new_task': [task],
+    UpdateExpression: 'SET issues.#taskId = :newTask',
+    ExpressionAttributeNames: {
+      '#taskId': task.taskId,
     },
+    ExpressionAttributeValues: {
+      ':newTask': task,
+    },
+    ConditionExpression: 'attribute_not_exists(issues.#taskId)',
   };
 
   const addToProjectResult = await dynamoDB.update(projectParams).promise();
