@@ -107,7 +107,12 @@ const createProjectInDB = async (repositoryInfo, teamName) => {
 
   const createTaskResults = [];
   if (repositoryIssues.length !== 0) {
-    projectParams.Item.issues = repositoryIssues;
+    // Transform to hashmapuh for faster lookups
+    const issuesMap = {};
+    repositoryIssues.forEach((issue) => {
+      issuesMap[issue.taskId] = { ...issue };
+    });
+    projectParams.Item.issues = issuesMap;
 
     // Writing to Tasks table in DB
     for (const issueObject of repositoryIssues) {
