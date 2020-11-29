@@ -147,7 +147,10 @@ const updateTaskStatus = async (projectName, taskId, newStatus) => {
     TableName: 'Tasks',
     Key: { taskId },
     ReturnValues: 'ALL_NEW',
-    UpdateExpression: 'SET status = :status',
+    UpdateExpression: 'SET #status = :status',
+    ExpressionAttributeNames: {
+      '#status': 'status',
+    },
     ExpressionAttributeValues: {
       ':status': newStatus,
     },
@@ -156,19 +159,18 @@ const updateTaskStatus = async (projectName, taskId, newStatus) => {
     TableName: 'Projects',
     Key: { projectName },
     ReturnValues: 'ALL_NEW',
-    UpdateExpression: 'SET issues.#taskId.status = :newStatus',
+    UpdateExpression: 'SET issues.#taskId.#status = :newStatus',
     ExpressionAttributeNames: {
       '#taskId': taskId,
+      '#status': 'status',
     },
     ExpressionAttributeValues: {
       ':newStatus': newStatus,
     },
   };
-  console.log(taskParams, projectParams);
 
   const updateTaskResult = await dynamoDB.update(taskParams).promise();
   const updateProjectResult = await dynamoDB.update(projectParams).promise();
-  console.log(updateTaskResult, updateProjectResult);
   return { updateTaskResult, updateProjectResult };
 };
 

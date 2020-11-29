@@ -21,8 +21,14 @@ const statusMap = Object.freeze({
  * @param {*} emission The object containing info about source & destination of the Droppable being dragged
  * @param {*} assignedTasks The component state
  * @param {*} setAssignedTasks The function to update component state
+ * @param {*} projectName The current project name
  */
-const onDragEnd = (emission, assignedTasks, setAssignedTasks) => {
+const onDragEnd = async (
+  emission,
+  assignedTasks,
+  setAssignedTasks,
+  projectName
+) => {
   if (!emission.destination) return;
 
   const { source, destination } = emission;
@@ -36,6 +42,12 @@ const onDragEnd = (emission, assignedTasks, setAssignedTasks) => {
     ...assignedTasks,
     [source.droppableId]: sourceItems,
     [destination.droppableId]: destinationItems,
+  });
+
+  const updateTaskResult = await axios.post('/api/tasks/update-status', {
+    projectName,
+    taskId: Number(emission.draggableId),
+    newStatus: destination.droppableId,
   });
 };
 
@@ -73,7 +85,7 @@ const ProjectBoard = (props) => {
         IN_REVIEW: [],
         DONE: [],
       };
-      data.tasks.forEach((issueObject) => {
+      Object.values(data.tasks).forEach((issueObject) => {
         tasksMap[issueObject.status].push(issueObject);
       });
       setAllTasks(data.issues);
@@ -121,7 +133,12 @@ const ProjectBoard = (props) => {
         <div className="tasks__container">
           <DragDropContext
             onDragEnd={(emission) =>
-              onDragEnd(emission, assignedTasks, setAssignedTasks)
+              onDragEnd(
+                emission,
+                assignedTasks,
+                setAssignedTasks,
+                match.params.projectName
+              )
             }
           >
             {Object.entries(assignedTasks).map(([status, tasks]) => {
