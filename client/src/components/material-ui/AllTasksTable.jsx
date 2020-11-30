@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TaskModal from './TaskModal';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -65,12 +66,19 @@ const statusMap = Object.freeze({
 const AllTasksTable = (props) => {
   const classes = useStyles();
   const [rows, setRows] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState({});
 
   useEffect(() => {
     if (props.tasks) {
       setRows(props.tasks);
     }
   }, [props.tasks]);
+
+  const handleClick = (taskObject) => {
+    setShowModal(true);
+    setSelectedTask(taskObject);
+  }
 
   return (
     <div className={classes.container}>
@@ -96,7 +104,7 @@ const AllTasksTable = (props) => {
           </TableHead>
           <TableBody>
             {Object.values(rows).map((taskObject) => (
-              <TableRow key={taskObject.taskId} className={classes.taskRow}>
+              <TableRow key={taskObject.taskId} className={classes.taskRow} onClick={() => handleClick(taskObject)}>
                 <TableCell component="th" scope="row">
                   {taskObject.taskId}
                 </TableCell>
@@ -128,6 +136,12 @@ const AllTasksTable = (props) => {
             ))}
           </TableBody>
         </Table>
+        {showModal && 
+          <TaskModal 
+            showModal={showModal}
+            setShowModal={setShowModal}
+            selectedTask={selectedTask}
+          />}
       </TableContainer>
     </div>
   );

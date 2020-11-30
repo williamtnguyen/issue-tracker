@@ -9,7 +9,6 @@ const createIssueOnGit = async (req) => {
   const {
     title,
     assignees,
-    reporters,
     description,
     owner,
     projectName,
@@ -19,7 +18,6 @@ const createIssueOnGit = async (req) => {
     title: title,
     body: description,
     assignees: assignees,
-    reporters: reporters,
   };
   const authHeaders = {
     headers: {
