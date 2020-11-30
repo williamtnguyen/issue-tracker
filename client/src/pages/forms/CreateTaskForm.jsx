@@ -88,18 +88,7 @@ const TaskToGithub = (props) => {
         goBackToProjectPage();
       }
     } catch (error) {
-      // return (
-      //   <Snackbar
-      //     open={() => setShowSnackbar(true)}
-      //     autoHideDuration={5000}
-      //     onClose={() => setShowSnackbar(false)}
-      //   >
-      //     <Alert onClose={() => setShowSnackbar(false)} severity="error">
-      //       Task can't be added at the moment
-      //     </Alert>
-      //   </Snackbar>
-      // );
-      console.error(error);
+      setShowSnackbar(true);
     }
   };
 
@@ -230,6 +219,18 @@ const TaskToGithub = (props) => {
                 Submit
               </Button>
             </form>
+            {showSnackbar && (
+              <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={() => setShowSnackbar(true)}
+                autoHideDuration={3000}
+                onClose={() => setShowSnackbar(false)}
+              >
+                <Alert onClose={() => setShowSnackbar(false)} severity="error">
+                  Task can't be added at the moment
+                </Alert>
+              </Snackbar>
+            )}
           </Box>
         </div>
       </div>

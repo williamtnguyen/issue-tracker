@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../App';
 import axios from 'axios';
 import { Button, CircularProgress } from '@material-ui/core';
-import illustration from '../assets/landing-page-illustration.png';
+// import illustration from '../assets/landing-page-illustration.png';
 import './Landing.scss';
 
 const Landing = (props) => {

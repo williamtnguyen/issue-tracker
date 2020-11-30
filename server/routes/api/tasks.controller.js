@@ -26,7 +26,7 @@ const createIssueOnGit = async (req) => {
   };
 
   const apiResponse = await axios.post(
-    `https://api.github.com/repos/${owner}/${projectName}/issues`,
+    `https://api.github.com/repos/123/${projectName}/issues`,
     requestBody,
     authHeaders
   );
@@ -244,6 +244,7 @@ taskRouter.post('/update-status', async (req, res) => {
       res.status(200).json(updateTaskResult);
     }
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
 });

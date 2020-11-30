@@ -1,0 +1,15 @@
+language: node_js
+
+node_js:
+  - 14.15.1
+
+cache:
+  directories:
+    - '$HOME/.npm'
+
+install:
+  - cd client
+  - npm i
+
+script:
+  - npm run build
