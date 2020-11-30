@@ -8,5 +8,7 @@ const teamsEndpoint = require('./team.controller');
 router.use('/teams', teamsEndpoint);
 const usersEndpoint = require('./users.controller');
 router.use('/users', usersEndpoint);
+const searchEndpoint = require('./navbar.controller');
+router.use('/searchResults',searchEndpoint);
 
 module.exports = router;

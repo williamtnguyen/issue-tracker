@@ -47,7 +47,7 @@ usersRouter.get('/:githubUsername', async (req, res) => {
     followerCount: githubApiInfo.followers,
     followingCount: githubApiInfo.following,
     repoCount: githubApiInfo.public_repos,
-    teams: dynamoDbInfo.Item.teams,
+    teams: dynamoDbInfo.Item.teams
   };
 
   res.status(200).json(response);
