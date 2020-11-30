@@ -27,27 +27,13 @@ const useStyles = makeStyles({
   },
 });
 
-const createData = (
-  teamName,
-  totalProjects,
-  totalTasks,
-  assignedTasks,
-  completedTasks
-) => {
-  return { teamName, totalProjects, totalTasks, assignedTasks, completedTasks };
-};
-
 const TeamTable = (props) => {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
     if (props.teams) {
-      const teams = [];
-      props.teams.forEach((teamName) => {
-        teams.push(createData(teamName, -1, -1, -1, -1));
-      });
-      setRows(teams);
+      setRows(props.teams);
     }
   }, [props.teams]);
 
@@ -61,34 +47,26 @@ const TeamTable = (props) => {
         <TableHead>
           <TableRow className={classes.mainTableRow}>
             <TableCell className={classes.mainTableCell}>Team Name</TableCell>
+            <TableCell className={classes.mainTableCell} align="center">
+              Total Members
+            </TableCell>
             <TableCell className={classes.mainTableCell} align="right">
               Total Projects
-            </TableCell>
-            <TableCell className={classes.mainTableCell} align="right">
-              Total Tasks
-            </TableCell>
-            <TableCell className={classes.mainTableCell} align="right">
-              Assigned Tasks
-            </TableCell>
-            <TableCell className={classes.mainTableCell} align="right">
-              Completed Tasks
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow
-              key={row.teamName}
+              key={row.name}
               className={classes.teamRow}
-              onClick={() => goToTeamPage(row.teamName)}
+              onClick={() => goToTeamPage(row.name)}
             >
               <TableCell component="th" scope="row">
-                {row.teamName}
+                {row.name}
               </TableCell>
+              <TableCell align="center">{row.totalMembers}</TableCell>
               <TableCell align="right">{row.totalProjects}</TableCell>
-              <TableCell align="right">{row.totalTasks}</TableCell>
-              <TableCell align="right">{row.assignedTasks}</TableCell>
-              <TableCell align="right">{row.completedTasks}</TableCell>
             </TableRow>
           ))}
         </TableBody>

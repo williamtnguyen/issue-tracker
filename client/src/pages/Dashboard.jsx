@@ -34,7 +34,24 @@ const Dashboard = (props) => {
     setFollowerCount(data.followerCount);
     setFollowingCount(data.followingCount);
     setRepoCount(data.repoCount);
-    setTeams(data.teams);
+    if (data.teams) {
+      const teamRows = [];
+      for (const teamName of data.teams) {
+        const teamsApiResponse = await axios.get(`/api/teams/${teamName}`);
+        const teamInfo = {
+          name: teamName,
+          totalMembers: teamsApiResponse.data.members
+            ? teamsApiResponse.data.members.length
+            : 0,
+          totalProjects: teamsApiResponse.data.projects
+            ? teamsApiResponse.data.projects.length
+            : 0,
+        };
+        teamRows.push(teamInfo);
+      }
+
+      setTeams(teamRows);
+    }
     setIsLoadingData(false);
   };
 

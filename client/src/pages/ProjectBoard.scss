@@ -18,9 +18,10 @@
 
 .column__droppable {
   background-color: lightgrey;
-  padding: 5px;
+  padding: 7px;
   width: 250px;
   min-height: 500px;
+  border-radius: 7px;
 
   &--is-dragging-over {
     background-color: lightblue;
@@ -34,6 +35,7 @@
   min-height: 50px;
   background-color: #456c86;
   color: #fff;
+  border-radius: 7px;
 
   &--is-dragging {
     background-color: #263b4a;

@@ -5,7 +5,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
 
 import Navbar from '../components/material-ui/Navbar';
-import { ButtonGroup, Button } from '@material-ui/core';
+import AllTasksTable from '../components/material-ui/AllTasksTable';
+import { ButtonGroup, Button, Container } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import './ProjectBoard.scss';
 
@@ -57,7 +58,7 @@ const ProjectBoard = (props) => {
   const { history, match } = props;
 
   const [assignedTasksView, setAssignedTasksView] = useState(true);
-  const [allTasks, setAllTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState({});
   const [assignedTasks, setAssignedTasks] = useState({});
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const ProjectBoard = (props) => {
       Object.values(data.tasks).forEach((issueObject) => {
         tasksMap[issueObject.status].push(issueObject);
       });
-      setAllTasks(data.issues);
+      setAllTasks(data.tasks);
       setAssignedTasks(tasksMap);
     } catch (error) {
       console.error(error);
@@ -114,7 +115,7 @@ const ProjectBoard = (props) => {
         Back to Team
       </Button>
       <h1>{match.params.projectName}</h1>
-      <ButtonGroup variant="contained" color="secondary">
+      <ButtonGroup variant="text" style={{ border: '1px lightgrey solid' }}>
         <Button id="assignedTasks" onClick={() => setAssignedTasksView(true)}>
           Assigned Tasks
         </Button>
@@ -199,6 +200,9 @@ const ProjectBoard = (props) => {
         </div>
       ) : (
         <div>
+          <Container>
+            <AllTasksTable tasks={allTasks} />
+          </Container>
           <Button
             onClick={goToCreateTaskForm}
             variant="contained"
