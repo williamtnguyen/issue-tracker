@@ -10,5 +10,7 @@ const teamsEndpoint = require('./teams.controller');
 router.use('/teams', teamsEndpoint);
 const usersEndpoint = require('./users.controller');
 router.use('/users', usersEndpoint);
+const taskEndpoint = require('./tasks.controller');
+router.use('/tasks', taskEndpoint);
 
 module.exports = router;

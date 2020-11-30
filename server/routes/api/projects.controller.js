@@ -50,7 +50,7 @@ const getRepositoryInfo = async (githubUsername, projectName) => {
     // Reduce the API response to an array of only needed info
     const repositoryIssues = githubIssues.data.map((issueObject) => {
       return {
-        id: issueObject.id,
+        taskId: issueObject.id,
         title: issueObject.title,
         description: issueObject.body,
         status: TaskProgressEnum.TO_DO,
@@ -107,14 +107,19 @@ const createProjectInDB = async (repositoryInfo, teamName) => {
 
   const createTaskResults = [];
   if (repositoryIssues.length !== 0) {
-    projectParams.Item.issues = repositoryIssues;
+    // Transform to hashmapuh for faster lookups
+    const issuesMap = {};
+    repositoryIssues.forEach((issue) => {
+      issuesMap[issue.taskId] = { ...issue };
+    });
+    projectParams.Item.issues = issuesMap;
 
     // Writing to Tasks table in DB
     for (const issueObject of repositoryIssues) {
       const taskParams = {
         TableName: 'Tasks',
         Item: {
-          taskId: issueObject.id,
+          taskId: issueObject.taskId,
           title: issueObject.title,
           description: issueObject.description,
           status: issueObject.status,
@@ -195,7 +200,7 @@ projectsRouter.post('/create', async (req, res) => {
 });
 
 /**
- * Gets all projects for a respective team
+ * Gets necessary information for a respective project
  */
 projectsRouter.get('/:projectName', async (req, res) => {
   const { projectName } = req.params;
