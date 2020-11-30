@@ -45,7 +45,7 @@ const onDragEnd = async (
     [destination.droppableId]: destinationItems,
   });
 
-  const updateTaskResult = await axios.post('/api/tasks/update-status', {
+  await axios.post('/api/tasks/update-status', {
     projectName,
     taskId: Number(emission.draggableId),
     newStatus: destination.droppableId,
