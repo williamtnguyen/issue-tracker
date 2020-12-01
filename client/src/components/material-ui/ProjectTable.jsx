@@ -35,6 +35,7 @@ const ProjectTable = (props) => {
     if (props.projects) {
       setRows(props.projects);
     }
+  // eslint-disable-next-line react/destructuring-assignment
   }, [props.projects]);
 
   const goToProjectPage = (projectName) => {

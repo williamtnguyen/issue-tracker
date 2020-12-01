@@ -59,7 +59,7 @@ const CreateTeamForm = (props) => {
               label="Team name..."
               variant="outlined"
               color="secondary"
-              fullWidth={true}
+              fullWidth
               style={{ marginBottom: '30px' }}
             />
             <Button variant="contained" color="secondary" type="submit">

@@ -1,0 +1,45 @@
+module.exports = {
+  env: {
+    node: true,
+    browser: true,
+    es2021: true,
+  },
+  extends: 'airbnb',
+  parser: 'babel-eslint',
+  plugins: [
+    'react',
+    'react-hooks',
+  ],
+  rules: {
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    'react/prop-types': 0,
+    'no-console': 'off',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+    'react/no-unescaped-entities': 'off',
+    'no-trailing-spaces': 'off', 
+    'import/no-cycle': 'off',     
+    'linebreak-style': 'off',
+    'import/order': 'off',
+    'object-shorthand': 'off',
+    'no-use-before-define': 'off',
+    'comma-dangle': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'no-await-in-loop': 'off',
+    'no-restricted-syntax': 'off',
+    'react/jsx-one-expression-per-line': 'off',
+    'max-len': [2, 150, 4, { ignoreComments: true, ignoreUrls: true }],
+    'no-shadow': 'off',
+    'jsx-a11y/no-static-element-interactions': 'off',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'consistent-return': 'off',
+    'react/no-array-index-key': 'off',
+    'react/self-closing-comp': 'off',
+    'no-nested-ternary': 'off'
+  },
+  settings: {
+    react: {
+      version: '999.999.999',
+    },
+  },
+};

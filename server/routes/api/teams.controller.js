@@ -1,6 +1,8 @@
 const express = require('express');
+
 const teamsRouter = express.Router();
 const AWS = require('aws-sdk');
+
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Checks if a teamName exists in the Teams table
@@ -11,7 +13,7 @@ const doesTeamExistInDB = async (teamName) => {
   };
 
   const lookup = await dynamoDB.get(params).promise();
-  return lookup.Item !== undefined && lookup.Item !== null ? true : false;
+  return !!(lookup.Item !== undefined && lookup.Item !== null);
 };
 
 // Checks if a githubUsername exists in the Users table
@@ -22,7 +24,7 @@ const doesUserExistInDB = async (githubUsername) => {
   };
 
   const lookup = await dynamoDB.get(params).promise();
-  return lookup.Item !== undefined && lookup.Item !== null ? true : false;
+  return !!(lookup.Item !== undefined && lookup.Item !== null);
 };
 
 // Creates a new team with teamName in the Teams table
@@ -30,7 +32,7 @@ const createTeamInDB = async (teamName, creatorUsername) => {
   const teamParams = {
     TableName: 'Teams',
     Item: {
-      teamName: teamName,
+      teamName,
       members: [creatorUsername],
     },
     ReturnValues: 'ALL_OLD',
@@ -79,7 +81,6 @@ const joinMemberToTeamInDB = async (teamName, joiningUsername) => {
 
   const newTeam = await dynamoDB.update(teamParams).promise();
   const newMember = await dynamoDB.update(userParams).promise();
-  console.log(newTeam, newMember);
   return { newTeam, newMember };
 };
 
@@ -115,23 +116,20 @@ const addMemberToTeamInDB = async (teamName, addingUsername) => {
       },
     };
     newMember = await dynamoDB.update(updateUserParams).promise();
-    console.log(newTeam, newMember);
     return { newTeam, newMember };
   }
   // If user !exists, create a new user entry in DB with teamName as their only current team
-  else {
-    const createUserParams = {
-      TableName: 'Users',
-      Item: {
-        githubUsername: addingUsername,
-        teams: [teamName],
-      },
-      ReturnValues: 'ALL_OLD',
-    };
-    newMember = await dynamoDB.put(createUserParams).promise();
-    console.log(newTeam, newMember);
-    return { newTeam, newMember };
-  }
+
+  const createUserParams = {
+    TableName: 'Users',
+    Item: {
+      githubUsername: addingUsername,
+      teams: [teamName],
+    },
+    ReturnValues: 'ALL_OLD',
+  };
+  newMember = await dynamoDB.put(createUserParams).promise();
+  return { newTeam, newMember };
 };
 
 // Fetches information about an entry in Teams table with teamName
@@ -145,9 +143,7 @@ const getTeamInformation = async (teamName) => {
   return teamInfo.Item;
 };
 
-const isEmpty = (object) => {
-  return Object.keys(object).length === 0;
-};
+const isEmpty = (object) => Object.keys(object).length === 0;
 
 /**
  * Creates a Team
@@ -159,8 +155,8 @@ teamsRouter.post('/create', async (req, res) => {
   if (!doesExist) {
     const createResult = await createTeamInDB(teamName, creatorUsername);
     if (
-      isEmpty(createResult.createTeamResult) &&
-      !isEmpty(createResult.updateUserResult)
+      isEmpty(createResult.createTeamResult)
+      && !isEmpty(createResult.updateUserResult)
     ) {
       res.status(200).json({ teamName });
     }
@@ -221,11 +217,6 @@ teamsRouter.post('/add-member', async (req, res) => {
 
   if (doesTeamExist) {
     const addResult = await addMemberToTeamInDB(teamName, addingUsername);
-    if (!isEmpty(addResult.newTeam) && !isEmpty(addResult.newMember)) {
-      console.log(`Existing member added to team ${teamName}`);
-    } else {
-      console.log(`New member created and joined to team ${teamName}`);
-    }
     res.status(200).json(addResult);
   } else {
     res.status(400).json({ message: 'Team name does not exist' });

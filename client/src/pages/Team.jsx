@@ -44,7 +44,8 @@ const Team = (props) => {
     // Assuming team will always have at least 1 member, and projects can be null or array
     setTeamMembers(data.members);
     if (data.projects) {
-      // For each project name in teamsApiResponse, make a call to projects API to gather task counts for table
+      // For each project name in teamsApiResponse, make a call to 
+      // projects API to gather task counts for table
       const projectRows = [];
       for (const projectName of data.projects) {
         const projectsApiResponse = await axios.get(
@@ -52,23 +53,21 @@ const Team = (props) => {
         );
         const projectInfo = projectsApiResponse.data.issues
           ? {
-              name: projectName,
-              totalTasks: Object.keys(projectsApiResponse.data.issues).length,
-              assignedTasks: Object.values(
-                projectsApiResponse.data.issues
-              ).filter((issueObject) =>
-                issueObject.assignees.includes(githubUsername)
-              ).length,
-              completedTasks: Object.values(
-                projectsApiResponse.data.issues
-              ).filter((issueObject) => issueObject.status === 'DONE').length,
-            }
+            name: projectName,
+            totalTasks: Object.keys(projectsApiResponse.data.issues).length,
+            assignedTasks: Object.values(
+              projectsApiResponse.data.issues
+            ).filter((issueObject) => issueObject.assignees.includes(githubUsername)).length,
+            completedTasks: Object.values(
+              projectsApiResponse.data.issues
+            ).filter((issueObject) => issueObject.status === 'DONE').length,
+          }
           : {
-              name: projectName,
-              totalTasks: 0,
-              assignedTasks: 0,
-              completedTasks: 0,
-            };
+            name: projectName,
+            totalTasks: 0,
+            assignedTasks: 0,
+            completedTasks: 0,
+          };
         projectRows.push(projectInfo);
       }
 

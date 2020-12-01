@@ -1,7 +1,9 @@
 const axios = require('axios');
 const express = require('express');
+
 const taskRouter = express.Router();
 const AWS = require('aws-sdk');
+
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 // Creates a new issue on github
@@ -15,9 +17,9 @@ const createIssueOnGit = async (req) => {
   } = req.body;
 
   const requestBody = {
-    title: title,
+    title,
     body: description,
-    assignees: assignees,
+    assignees,
   };
   const authHeaders = {
     headers: {
@@ -26,11 +28,11 @@ const createIssueOnGit = async (req) => {
   };
 
   const apiResponse = await axios.post(
-    `https://api.github.com/repos/123/${projectName}/issues`,
+    `https://api.github.com/repos/${owner}/${projectName}/issues`,
     requestBody,
-    authHeaders
+    authHeaders,
   );
-
+  
   return apiResponse.data;
 };
 
@@ -50,8 +52,7 @@ const createTaskOnDB = async (reqBody, githubId, creationTime) => {
 
   const addToTasksResult = await addToTasks(task);
   const addToProjectsResult = await addToProjects(reqBody.projectName, task);
-  const addUserTasksResult =
-    reqBody.assignees.length > 0 && (await addUserTasks(task));
+  const addUserTasksResult = reqBody.assignees.length > 0 && (await addUserTasks(task));
   return { addToTasksResult, addToProjectsResult, addUserTasksResult };
 };
 
@@ -174,9 +175,7 @@ const updateTaskStatus = async (projectName, taskId, newStatus) => {
   return { updateTaskResult, updateProjectResult };
 };
 
-const isEmpty = (object) => {
-  return Object.keys(object).length === 0;
-};
+const isEmpty = (object) => Object.keys(object).length === 0;
 
 /**
  * Creates a task
@@ -187,12 +186,12 @@ taskRouter.post('/create', async (req, res) => {
     const dynamoResult = await createTaskOnDB(
       req.body,
       githubResult.id,
-      githubResult.created_at
+      githubResult.created_at,
     );
     if (
-      isEmpty(dynamoResult.addToTasksResult) &&
-      !isEmpty(dynamoResult.addToProjectsResult) &&
-      !isEmpty(dynamoResult.addUserTasksResult)
+      isEmpty(dynamoResult.addToTasksResult)
+      && !isEmpty(dynamoResult.addToProjectsResult)
+      && !isEmpty(dynamoResult.addUserTasksResult)
     ) {
       res.status(200).json(dynamoResult);
     }
@@ -235,16 +234,15 @@ taskRouter.post('/update-status', async (req, res) => {
     const updateTaskResult = await updateTaskStatus(
       projectName,
       taskId,
-      newStatus
+      newStatus,
     );
     if (
-      !isEmpty(updateTaskResult.updateTaskResult) &&
-      !isEmpty(updateTaskResult.updateProjectResult)
+      !isEmpty(updateTaskResult.updateTaskResult)
+      && !isEmpty(updateTaskResult.updateProjectResult)
     ) {
       res.status(200).json(updateTaskResult);
     }
   } catch (error) {
-    console.log(error);
     res.status(400).json(error);
   }
 });

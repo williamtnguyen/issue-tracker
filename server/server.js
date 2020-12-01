@@ -1,4 +1,5 @@
 const express = require('express');
+
 const server = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -15,7 +16,8 @@ server.use(cookieParser());
 AWS.config.loadFromPath('./config/secrets.json');
 
 // Serves all routes under prefix 'localhost:5000/api/*'
-const routes = require('./routes/api/');
+const routes = require('./routes/api');
+
 server.use('/api', routes);
 
 const PORT = process.env.PORT || 5000;
