@@ -1,7 +1,9 @@
 const express = require('express');
 const axios = require('axios');
+
 const usersRouter = express.Router();
 const AWS = require('aws-sdk');
+
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 /* Uses accessToken to retrieve basic information about a user */
@@ -14,7 +16,7 @@ const getGithubUserInfo = async (accessToken) => {
 
   const apiResponse = await axios.get(
     'https://api.github.com/user',
-    authHeaders
+    authHeaders,
   );
 
   return apiResponse.data;

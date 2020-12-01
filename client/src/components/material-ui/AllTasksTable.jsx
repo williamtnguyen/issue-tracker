@@ -73,12 +73,13 @@ const AllTasksTable = (props) => {
     if (props.tasks) {
       setRows(props.tasks);
     }
+  // eslint-disable-next-line react/destructuring-assignment
   }, [props.tasks]);
 
   const handleClick = (taskObject) => {
     setShowModal(true);
     setSelectedTask(taskObject);
-  }
+  };
 
   return (
     <div className={classes.container}>
@@ -115,33 +116,36 @@ const AllTasksTable = (props) => {
                       taskObject.status === 'TO_DO'
                         ? classes.statusToDo
                         : taskObject.status === 'IN_PROGRESS'
-                        ? classes.statusInProgress
-                        : taskObject.status === 'IN_REVIEW'
-                        ? classes.statusInReview
-                        : classes.statusDone
+                          ? classes.statusInProgress
+                          : taskObject.status === 'IN_REVIEW'
+                            ? classes.statusInReview
+                            : classes.statusDone
                     }`}
-                  ></span>
+                  >
+                  </span>
                   <span>{statusMap[taskObject.status]}</span>
                 </TableCell>
-                {typeof taskObject.reporters === 'string' ||
-                (Array.isArray(taskObject.reporters) &&
-                  taskObject.reporters.length === 1) ? (
-                  <TableCell align="right">{taskObject.reporters}</TableCell>
-                ) : (
-                  <TableCell align="right">
-                    {taskObject.reporters[0]}...
-                  </TableCell>
-                )}
+                {typeof taskObject.reporters === 'string'
+                || (Array.isArray(taskObject.reporters)
+                  && taskObject.reporters.length === 1) ? (
+                    <TableCell align="right">{taskObject.reporters}</TableCell>
+                  ) : (
+                    <TableCell align="right">
+                      {taskObject.reporters[0]}...
+                    </TableCell>
+                  )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        {showModal && 
+        {showModal 
+          && (
           <TaskModal 
             showModal={showModal}
             setShowModal={setShowModal}
             selectedTask={selectedTask}
-          />}
+          />
+          )}
       </TableContainer>
     </div>
   );

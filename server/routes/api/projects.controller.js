@@ -1,7 +1,9 @@
 const express = require('express');
 const axios = require('axios');
+
 const projectsRouter = express.Router();
 const AWS = require('aws-sdk');
+
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const TaskProgressEnum = require('../../utils/enums/tasks');
 
@@ -17,57 +19,55 @@ const isUserInTeam = async (githubUsername, teamName) => {
 };
 
 /* Returns a promise that either resolves the required repo info, else rejects an error object */
-const getRepositoryInfo = async (githubUsername, projectName) => {
-  return new Promise(async (resolve, reject) => {
-    // Get all repos under githubUsername from Github API
-    const githubRepos = await axios.get(
-      `https://api.github.com/users/${githubUsername}/repos?sort=created`
-    );
+// eslint-disable-next-line
+const getRepositoryInfo = async (githubUsername, projectName) => new Promise(async (resolve, reject) => {
+  // Get all repos under githubUsername from Github API
+  const githubRepos = await axios.get(
+    `https://api.github.com/users/${githubUsername}/repos?sort=created`,
+  );
 
-    // Filter for the repo with projectName
-    const repositoryInfo = githubRepos.data.filter(
-      (repoObject) => repoObject.name === projectName
-    );
+  // Filter for the repo with projectName
+  const repositoryInfo = githubRepos.data.filter(
+    (repoObject) => repoObject.name === projectName,
+  );
 
-    // Assign repositoryId/repositoryName pointers if filter was successful, else reject with an error message
-    let repositoryId;
-    let repositoryName;
-    if (repositoryInfo.length !== 0) {
-      repositoryId = repositoryInfo[0].id;
-      repositoryName = repositoryInfo[0].name;
-    } else {
-      reject({
-        message:
+  // Assign repositoryId/repositoryName pointers if filter was successful,
+  // else reject with an error message
+  let repositoryId;
+  let repositoryName;
+  if (repositoryInfo.length !== 0) {
+    repositoryId = repositoryInfo[0].id;
+    repositoryName = repositoryInfo[0].name;
+  } else {
+    reject({
+      message:
           'Project name does not exist as a repository under associated Github username',
-      });
-    }
-
-    // Get all issues under projectName from Github API
-    const githubIssues = await axios.get(
-      `https://api.github.com/repos/${githubUsername}/${projectName}/issues`
-    );
-
-    // Reduce the API response to an array of only needed info
-    const repositoryIssues = githubIssues.data.map((issueObject) => {
-      return {
-        taskId: issueObject.id,
-        title: issueObject.title,
-        description: issueObject.body,
-        status: TaskProgressEnum.TO_DO,
-        reporters: issueObject.user.login,
-        assignees: issueObject.assignees.map(
-          (assigneeObject) => assigneeObject.login
-        ),
-      };
     });
+  }
 
-    resolve({
-      repositoryId,
-      repositoryName,
-      repositoryIssues,
-    });
+  // Get all issues under projectName from Github API
+  const githubIssues = await axios.get(
+    `https://api.github.com/repos/${githubUsername}/${projectName}/issues`,
+  );
+
+  // Reduce the API response to an array of only needed info
+  const repositoryIssues = githubIssues.data.map((issueObject) => ({
+    taskId: issueObject.id,
+    title: issueObject.title,
+    description: issueObject.body,
+    status: TaskProgressEnum.TO_DO,
+    reporters: issueObject.user.login,
+    assignees: issueObject.assignees.map(
+      (assigneeObject) => assigneeObject.login,
+    ),
+  }));
+
+  resolve({
+    repositoryId,
+    repositoryName,
+    repositoryIssues,
   });
-};
+});
 
 // Checks if a projectName exists in the Projects table
 const doesProjectExistInDB = async (projectName) => {
@@ -77,7 +77,7 @@ const doesProjectExistInDB = async (projectName) => {
   };
 
   const lookup = await dynamoDB.get(params).promise();
-  return lookup.Item !== undefined && lookup.Item !== null ? true : false;
+  return !!(lookup.Item !== undefined && lookup.Item !== null);
 };
 
 // Creates a new project in DB with projectName/projectId in the Projects table
@@ -150,9 +150,7 @@ const getProjectInformation = async (projectName) => {
   return projectInfo.Item;
 };
 
-const isEmpty = (object) => {
-  return Object.keys(object).length === 0;
-};
+const isEmpty = (object) => Object.keys(object).length === 0;
 
 /**
  * Creates a project entry in Projects table in DB using info from Github API
@@ -164,7 +162,6 @@ const isEmpty = (object) => {
  * • Creates an entry in DB about the current project (id, name, issues[])
  */
 projectsRouter.post('/create', async (req, res) => {
-  const { cookies } = req;
   const { teamName, creatorUsername, projectName } = req.body;
 
   const isTeamMember = await isUserInTeam(creatorUsername, teamName);
@@ -178,7 +175,7 @@ projectsRouter.post('/create', async (req, res) => {
   try {
     const repositoryInfo = await getRepositoryInfo(
       creatorUsername,
-      projectName
+      projectName,
     );
     const doesProjectExist = await doesProjectExistInDB(projectName);
 
@@ -187,8 +184,8 @@ projectsRouter.post('/create', async (req, res) => {
     } else {
       const createResult = await createProjectInDB(repositoryInfo, teamName);
       if (
-        isEmpty(createResult.createProjectResult) &&
-        !isEmpty(createResult.updateTeamResult)
+        isEmpty(createResult.createProjectResult)
+        && !isEmpty(createResult.updateTeamResult)
       ) {
         res.status(200).json({ teamName, creatorUsername, projectName });
       }

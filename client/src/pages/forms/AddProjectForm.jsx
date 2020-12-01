@@ -42,8 +42,8 @@ const AddProjectForm = (props) => {
     const splitUrl = trimmedUrl.split('/');
 
     if (
-      (splitUrl[0] === 'https:' && splitUrl.length !== 5) ||
-      (splitUrl[0].includes('github.com') && splitUrl.length !== 3)
+      (splitUrl[0] === 'https:' && splitUrl.length !== 5)
+      || (splitUrl[0].includes('github.com') && splitUrl.length !== 3)
     ) {
       setInputError(true);
       setInputErrorText('URL format is incorrect');
@@ -97,7 +97,7 @@ const AddProjectForm = (props) => {
               label="Github repository URL..."
               variant="outlined"
               color="secondary"
-              fullWidth={true}
+              fullWidth
               style={{ marginBottom: '30px' }}
             />
             <Button variant="contained" color="secondary" type="submit">

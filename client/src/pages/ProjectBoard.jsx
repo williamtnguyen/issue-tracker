@@ -19,7 +19,8 @@ const statusMap = Object.freeze({
 
 /**
  * Handles events when a Draggable is moved onto a Droppable
- * @param {*} emission The object containing info about source & destination of the Droppable being dragged
+ * @param {*} emission The object containing info about source & destination 
+ * of the Droppable being dragged
  * @param {*} assignedTasks The component state
  * @param {*} setAssignedTasks The function to update component state
  * @param {*} projectName The current project name
@@ -87,7 +88,9 @@ const ProjectBoard = (props) => {
         DONE: [],
       };
       Object.values(data.tasks).forEach((issueObject) => {
-        tasksMap[issueObject.status].push(issueObject);
+        if (issueObject.status !== undefined && issueObject.status !== '') {
+          tasksMap[issueObject.status].push(issueObject);
+        }
       });
       setAllTasks(data.tasks);
       setAssignedTasks(tasksMap);
@@ -126,90 +129,87 @@ const ProjectBoard = (props) => {
         </Button>
       </ButtonGroup>
       {assignedTasksView ? (
-        <h3>Tasks assigned to {githubUsername}:</h3>
+        <h3>
+          Tasks assigned to
+          {githubUsername}:
+        </h3>
       ) : (
-        <h3>All tasks for {match.params.projectName}:</h3>
+        <h3>
+          All tasks for
+          {match.params.projectName}:
+        </h3>
       )}
       {assignedTasksView ? (
         <div className="tasks__container">
           <DragDropContext
-            onDragEnd={(emission) =>
-              onDragEnd(
-                emission,
-                assignedTasks,
-                setAssignedTasks,
-                match.params.projectName
-              )
-            }
+            onDragEnd={(emission) => onDragEnd(
+              emission,
+              assignedTasks,
+              setAssignedTasks,
+              match.params.projectName
+            )}
           >
-            {Object.entries(assignedTasks).map(([status, tasks]) => {
-              return (
-                <div key={status} className="column__container">
-                  <h1>{statusMap[status]}</h1>
-                  <Droppable droppableId={status}>
-                    {/* Droppable gives us provided props and current state in a callback function */}
-                    {(provided, snapshot) => {
-                      return (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          className={
-                            snapshot.isDraggingOver
-                              ? 'column__droppable column__droppable--is-dragging-over'
-                              : 'column__droppable'
-                          }
+            {Object.entries(assignedTasks).map(([status, tasks]) => (
+              <div key={status} className="column__container">
+                <h1>{statusMap[status]}</h1>
+                <Droppable droppableId={status}>
+                  {/* Droppable gives us provided props and current state in a callback function */}
+                  {(provided, snapshot) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className={
+                        snapshot.isDraggingOver
+                          ? 'column__droppable column__droppable--is-dragging-over'
+                          : 'column__droppable'
+                      }
+                    >
+                      {tasks.map((task, index) => (
+                        <Draggable
+                          key={task.taskId}
+                          draggableId={String(task.taskId)}
+                          index={index}
                         >
-                          {tasks.map((task, index) => {
-                            return (
-                              <Draggable
-                                key={task.taskId}
-                                draggableId={String(task.taskId)}
-                                index={index}
-                              >
-                                {/* Draggable gives us provided props and current state in a callback function */}
-                                {(provided, snapshot) => {
-                                  return (
-                                    <div className="card">
-                                      <div
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        ref={provided.innerRef}
-                                        style={{
-                                          ...provided.draggableProps.style,
-                                        }}
-                                        className={
-                                          snapshot.isDragging
-                                            ? 'item__draggable item__draggable--is-dragging'
-                                            : 'item__draggable'
-                                        }
-                                        onClick={(e) => {
-                                          setShowModal(!showModal)
-                                          setSelectedTask(task)
-                                        }}
-                                      >
-                                        {task.title}
-                                      </div>
-                                      {showModal && 
-                                        <TaskModal 
-                                          showModal={showModal}
-                                          setShowModal={setShowModal}
-                                          selectedTask={selectedTask}
-                                        />}
-                                    </div>
-                                  );
+                          {/* Draggable gives us provided props and current state in a callback function */}
+                          {(provided, snapshot) => (
+                            <div className="card">
+                              <div
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                ref={provided.innerRef}
+                                style={{
+                                  ...provided.draggableProps.style,
                                 }}
-                              </Draggable>
-                            );
-                          })}
-                          {/* React element that is used to increase available space in a Droppable during a drag when needed */}
-                          {provided.placeholder}
-                        </div>
-                      );
-                    }}
-                  </Droppable>
-                </div>
-              );
-            })}
+                                className={
+                                  snapshot.isDragging
+                                    ? 'item__draggable item__draggable--is-dragging'
+                                    : 'item__draggable'
+                                }
+                                onClick={() => {
+                                  setShowModal(!showModal);
+                                  setSelectedTask(task);
+                                }}
+                              >
+                                {task.title}
+                              </div>
+                              {showModal && (
+                                <TaskModal
+                                  showModal={showModal}
+                                  setShowModal={setShowModal}
+                                  selectedTask={selectedTask}
+                                />
+                              )}
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {/* React element that is used to increase available space in a Droppable during a drag when needed */}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </div>
+            ))}
           </DragDropContext>
         </div>
       ) : (

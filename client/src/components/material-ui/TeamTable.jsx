@@ -35,6 +35,7 @@ const TeamTable = (props) => {
     if (props.teams) {
       setRows(props.teams);
     }
+  // eslint-disable-next-line react/destructuring-assignment
   }, [props.teams]);
 
   const goToTeamPage = (teamName) => {

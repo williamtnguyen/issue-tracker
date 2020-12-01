@@ -30,7 +30,8 @@ const Landing = (props) => {
   }, []);
 
   const fetchAndSetUserInfo = async (authCode) => {
-    // Gets information about the user & sets an HTTPOnly Cookie in browser for all subsequent requests
+    // Gets information about the user & sets an HTTPOnly Cookie in 
+    // browser for all subsequent requests
     const githubUserInfo = await axios.post('/api/auth/access-token', {
       authCode,
     });

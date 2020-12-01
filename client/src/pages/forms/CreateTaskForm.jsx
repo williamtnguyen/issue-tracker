@@ -102,7 +102,7 @@ const TaskToGithub = (props) => {
             Back to Project
           </Button>
           <h1>Please enter new task information:</h1>
-          <Box className="">
+          <Box>
             <form
               className="task__form"
               onSubmit={(e) => handleSubmit(e)}
@@ -111,11 +111,11 @@ const TaskToGithub = (props) => {
             >
               <Box mb={2}>
                 <TextField
+                  required
                   label="Title"
                   inputProps={{ 'aria-label': 'description' }}
                   onChange={(e) => setTitle(e.target.value)}
                   fullWidth
-                  required
                 />
               </Box>
 
@@ -222,7 +222,7 @@ const TaskToGithub = (props) => {
             {showSnackbar && (
               <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                open={() => setShowSnackbar(true)}
+                open={showSnackbar}
                 autoHideDuration={3000}
                 onClose={() => setShowSnackbar(false)}
               >

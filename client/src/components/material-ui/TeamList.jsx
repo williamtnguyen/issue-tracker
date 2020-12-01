@@ -23,6 +23,7 @@ const TeamList = (props) => {
     if (props.teamMembers) {
       setTeamMembers(props.teamMembers);
     }
+  // eslint-disable-next-line react/destructuring-assignment
   }, [props.teamMembers]);
 
   return (

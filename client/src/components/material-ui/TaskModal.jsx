@@ -1,5 +1,7 @@
 import React from 'react';
-import { Chip, Dialog, withStyles, IconButton } from '@material-ui/core';
+import {
+  Chip, Dialog, withStyles, IconButton 
+} from '@material-ui/core';
 import './TaskModal.scss';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -63,7 +65,9 @@ const TaskModal = (props) => {
   });
 
   const DialogTitle = withStyles(styles)((props) => {
-    const { children, classes, onClose, ...other } = props;
+    const {
+      children, classes, onClose, ...other 
+    } = props;
     return (
       <MuiDialogTitle disableTypography className={classes.root} {...other}>
         {children}
@@ -121,16 +125,14 @@ const TaskModal = (props) => {
               </i>
               Assignees:{' '}
             </h3>
-            {assignees.map((assignee, i) => {
-              return (
-                <Chip
-                  key={i}
-                  label={assignee}
-                  color="primary"
-                  style={{ fontWeight: 'normal', marginRight: '0.5em' }}
-                />
-              );
-            })}
+            {assignees.map((assignee, i) => (
+              <Chip
+                key={i}
+                label={assignee}
+                color="primary"
+                style={{ fontWeight: 'normal', marginRight: '0.5em' }}
+              />
+            ))}
           </div>
         )}
         {reporters && reporters.length > 0 && (

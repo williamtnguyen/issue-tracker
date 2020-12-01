@@ -21,13 +21,13 @@ export const TeamContext = createContext();
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.githubUsername ? true : false
+    !!localStorage.githubUsername,
   );
   const [githubUsername, setGithubUsername] = useState(
-    localStorage.githubUsername ? localStorage.githubUsername : ''
+    localStorage.githubUsername ? localStorage.githubUsername : '',
   );
   const [teamName, setTeamName] = useState(
-    sessionStorage.teamName ? sessionStorage.teamName : ''
+    sessionStorage.teamName ? sessionStorage.teamName : '',
   );
 
   const userContext = {
