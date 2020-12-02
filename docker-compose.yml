@@ -1,0 +1,36 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: issue-tracker-backend
+    container_name: issue-tracker-express-server
+    restart: always
+    volumes:
+      - /server/node_modules
+    ports:
+      - "5000:5000"
+    networks:
+      - issue-tracker-network
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.prod
+    image: issue-tracker-frontend-prod
+    container_name: issue-tracker-react-app
+    restart: always
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - server
+    ports:
+      - "3000:3000"
+    networks:
+      - issue-tracker-network
+
+networks:
+  issue-tracker-network:
+    driver: bridge
+
+    
