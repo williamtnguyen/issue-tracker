@@ -25,5 +25,5 @@ server.listen(PORT, (error) => {
   if (error) {
     throw new Error(error);
   }
-  console.log('🔋 babu thomas 🔋');
+  console.log(`Express server listening on port ${PORT}`);
 });
