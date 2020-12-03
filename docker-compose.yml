@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     image: issue-tracker-backend
     container_name: issue-tracker-express-server
-    restart: always
     volumes:
       - /server/node_modules
     ports:
@@ -19,7 +18,6 @@ services:
       dockerfile: Dockerfile.prod
     image: issue-tracker-frontend-prod
     container_name: issue-tracker-react-app
-    restart: always
     volumes:
       - /app/node_modules
     depends_on:

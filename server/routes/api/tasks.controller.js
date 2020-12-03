@@ -18,22 +18,47 @@ const createIssueOnGit = async (req) => {
 
   const requestBody = {
     title,
-    body: description,
-    assignees,
+    body: description
   };
   const authHeaders = {
     headers: {
       Authorization: `token ${req.cookies.accessToken}`,
     },
   };
-
+  
+  // Creating a new task
   const apiResponse = await axios.post(
     `https://api.github.com/repos/${owner}/${projectName}/issues`,
     requestBody,
     authHeaders,
   );
-  
-  return apiResponse.data;
+
+  const taskData = apiResponse.data;
+
+  // Adding assignees
+  if (assignees.length > 1) {
+    let addAssigneesResult = await axios.post(
+      `https://api.github.com/repos/${owner}/${projectName}/issues/${taskData.number}/assignees`,
+      { assignees },
+      authHeaders,
+    );
+    const addAssigneeData = addAssigneesResult.data;
+    const resultLength = addAssigneeData.assignees.length;
+    if (resultLength !== 0 && resultLength !== assignees.length) {
+      let newAssignees = [];
+      addAssigneeData.assignees.forEach((assignee) => {
+        newAssignees.push(assignee.login);
+      });
+      return { 
+        newReq: {
+          ...taskData,
+          assignees: newAssignees
+        }
+      };
+    }
+  }
+
+  return taskData;
 };
 
 // Adds a new task to dynamoDB
@@ -79,7 +104,6 @@ const addToProjects = async (projectName, task) => {
     ExpressionAttributeValues: {
       ':newTask': task,
     },
-    ConditionExpression: 'attribute_not_exists(issues.#taskId)',
   };
 
   const addToProjectResult = await dynamoDB.update(projectParams).promise();
@@ -183,17 +207,32 @@ const isEmpty = (object) => Object.keys(object).length === 0;
 taskRouter.post('/create', async (req, res) => {
   try {
     const githubResult = await createIssueOnGit(req);
+    let newBody = req.body;
+    if (githubResult.newReq) {
+      newBody = {
+        ...req.body,
+        ...githubResult.newReq
+      };
+    } else {
+      newBody = {
+        ...req.body,
+        ...githubResult
+      };
+    }
     const dynamoResult = await createTaskOnDB(
-      req.body,
-      githubResult.id,
-      githubResult.created_at,
+      newBody,
+      newBody.id,
+      newBody.created_at,
     );
     if (
       isEmpty(dynamoResult.addToTasksResult)
       && !isEmpty(dynamoResult.addToProjectsResult)
-      && !isEmpty(dynamoResult.addUserTasksResult)
+      && (!isEmpty(dynamoResult.addUserTasksResult) 
+      || dynamoResult.addUserTasksResult === false) 
     ) {
-      res.status(200).json(dynamoResult);
+      res.status(200).json({ message: 'working' });
+    } else {
+      res.status(400).json({ message: 'Unable to create task' });
     }
   } catch (error) {
     res.status(400).json(error);
