@@ -131,12 +131,12 @@ const ProjectBoard = (props) => {
       {assignedTasksView ? (
         <h3>
           Tasks assigned to
-          {githubUsername}:
+          {` ${githubUsername}`}:
         </h3>
       ) : (
         <h3>
           All tasks for
-          {match.params.projectName}:
+          {` ${match.params.projectName}`}:
         </h3>
       )}
       {assignedTasksView ? (

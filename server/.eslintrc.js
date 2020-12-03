@@ -15,6 +15,7 @@ module.exports = {
     'no-console': 'off',
     'linebreak-style': 'off',
     'comma-dangle': 'off',
-    'no-trailing-spaces': 'off'
+    'no-trailing-spaces': 'off',
+    'prefer-const': 'off',
   },
 };
