@@ -131,7 +131,7 @@ const AllTasksTable = (props) => {
                     <TableCell align="right">{taskObject.reporters}</TableCell>
                   ) : (
                     <TableCell align="right">
-                      {taskObject.reporters[0]}...
+                      {taskObject.reporters && taskObject.reporters[0]}...
                     </TableCell>
                   )}
               </TableRow>

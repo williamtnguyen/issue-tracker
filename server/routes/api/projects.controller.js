@@ -89,6 +89,7 @@ const createProjectInDB = async (repositoryInfo, teamName) => {
     Item: {
       projectName: repositoryName,
       projectId: repositoryId,
+      issues: {}
     },
     ReturnValues: 'ALL_OLD',
   };
