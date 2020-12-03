@@ -5,7 +5,7 @@ FROM node:14-alpine
 WORKDIR /app
 
 # Copy package.json before copying contents of project
-COPY package.json .
+COPY package*.json ./
 
 # Install dependencies from package.json
 RUN npm install
@@ -18,4 +18,3 @@ EXPOSE 3000
 
 # Run the app
 CMD npm start
-

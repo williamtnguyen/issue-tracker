@@ -14,7 +14,7 @@ RUN npm install
 # copy other project files
 COPY . .
 
-#Expose port 5000
+# Expose port 5000
 EXPOSE 5000
 
 # build the folder
