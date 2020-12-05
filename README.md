@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/williamtnguyen/issue-tracker.svg?branch=master)](https://travis-ci.com/williamtnguyen/issue-tracker)
 
-This is a three-tier application that allows software teams to closely track tasks/issues. This application is essentially a JIRA clone that is fully synchronized with Github issues, offering additional features such as task status/priority and a rich UI.
+This is a three-tier application that allows software teams to closely track tasks/issues. This application is essentially a JIRA clone that is fully synchronized with Github issues.
 
 ## Course/Contributor Information
 
@@ -18,7 +18,7 @@ This is a three-tier application that allows software teams to closely track tas
 ### Cloud Services
 
 - AWS DynamoDB for NoSQL data storage
-- AWS EC2 to host our application
+- AWS EC2 to host the application
 
 ## Running the Project Locally
 
@@ -33,19 +33,45 @@ Install dependencies and run applications (two terminal tabs):
 Frontend:
 
 ```
-cd client
-npm install
-npm start
+$ cd client
+$ npm install
+$ npm start
 ```
 
 Backend:
 
 ```
-cd server
-npm install
-npm run dev
+$ cd server
+$ npm install
+$ npm run dev
 ```
+
+## Demo Screenshots
+
+Screenshots of the main features of the application
+
+### Main Dashboard
+
+![Dashboard](https://user-images.githubusercontent.com/42355738/101233248-3fd19600-366c-11eb-8e1d-0fb2db9e7d16.jpg)
+
+### Team Page
+
+![Team](https://user-images.githubusercontent.com/42355738/101233267-5bd53780-366c-11eb-886e-3c97d5f5d8ba.jpg)
+
+### Task Form
+
+![TaskForm](https://user-images.githubusercontent.com/42355738/101233290-9dfe7900-366c-11eb-9eec-ca0570a3e741.jpg)
+
+### Tasks Table
+
+![TasksTable](https://user-images.githubusercontent.com/42355738/101233292-a656b400-366c-11eb-95dd-3b478c75020b.jpg)
+
+### Tasks Board
+
+![TasksBoard](https://user-images.githubusercontent.com/42355738/101233295-a8b90e00-366c-11eb-8950-1dc137c92c01.jpg)
 
 ## System Diagram
 
 ![System Diagram](https://user-images.githubusercontent.com/42355738/100796324-4c888c80-33d5-11eb-84a1-43278ac73c65.png)
+
+Other diagrams that describe the application at a lower level can be found in this repository's [wiki](https://github.com/williamtnguyen/issue-tracker/wiki/Diagrams)
