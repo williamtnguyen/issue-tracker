@@ -46,29 +46,18 @@ $ npm install
 $ npm run dev
 ```
 
-## Demo Screenshots
+## Emulate Production
 
-Screenshots of the main features of the application
+Build React for production and serve with NGINX base image, in a container to container network with the backend
 
-### Main Dashboard
+```
+$ docker-compose up --build
+```
 
-![Dashboard](https://user-images.githubusercontent.com/42355738/101233248-3fd19600-366c-11eb-8e1d-0fb2db9e7d16.jpg)
+## Demonstration
 
-### Team Page
-
-![Team](https://user-images.githubusercontent.com/42355738/101233267-5bd53780-366c-11eb-886e-3c97d5f5d8ba.jpg)
-
-### Task Form
-
-![TaskForm](https://user-images.githubusercontent.com/42355738/101233290-9dfe7900-366c-11eb-9eec-ca0570a3e741.jpg)
-
-### Tasks Table
-
-![TasksTable](https://user-images.githubusercontent.com/42355738/101233292-a656b400-366c-11eb-95dd-3b478c75020b.jpg)
-
-### Tasks Board
-
-![TasksBoard](https://user-images.githubusercontent.com/42355738/101233295-a8b90e00-366c-11eb-8950-1dc137c92c01.jpg)
+- [Demo screenshots](https://github.com/williamtnguyen/issue-tracker/wiki/Demo-Screenshots)
+- [Application demo video](https://www.youtube.com/watch?v=NCANsMu_ixQ&feature=youtu.be)
 
 ## System Diagram
 
