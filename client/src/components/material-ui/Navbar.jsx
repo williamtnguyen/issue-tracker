@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, createContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,6 +15,9 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { UserContext } from '../../App';
 
+const axios = require('axios');
+
+export const SearchContext = createContext();
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -89,6 +92,21 @@ const Navbar = () => {
   const isMenuOpen = Boolean(anchorEl);
   const { setIsAuthenticated, setGithubUsername } = useContext(UserContext);
 
+  const searchContext = {
+    teamSearchData,
+    userSearchData,
+    projectSearchData,
+  };
+  
+  /**
+   * state variables for handling the return of the search results
+   * 
+   */
+  const [searchQuery, setSearchQuery] = useState('');
+  const [teamSearchData, setTeamSearchData] = useState([]);
+  const [userSearchData, setUserSearchData] = useState([]);
+  const [projectSearchData, setProjectSearchData] = useState([]);
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -97,6 +115,44 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const handleSearchInput = async (event) => {
+    setSearchQuery(event.target.data);
+    handleTeamSearch();
+    handleUserSearch();
+    handleProjectSearch();
+  };
+
+  const handleTeamSearch = async () => {
+    const teamSearchResponse = await axios.get(`/api/searchResults/matching-teams/${searchQuery}`);
+    const returnedTeamSearchData = teamSearchResponse.data;
+    const teamNameRows = [];
+    for (const teamName of returnedTeamSearchData) {
+      teamNameRows.push(teamName);
+    }
+    setTeamSearchData(teamNameRows);
+  };
+
+  const handleUserSearch = async () => {
+    const userSearchResponse = await axios.get(`/api/searchResult/matching-users/${searchQuery}`);
+    const returnedUserSearchData = userSearchResponse.data;
+    const userList = [];
+
+    for (const userName of returnedUserSearchData) {
+      userList.push(userName);
+    }
+
+    setUserSearchData(userList);
+  };
+  const handleProjectSearch = async () => {
+    const projectSearchResponse = await axios.get(`api/searchResult/matching-projects/${searchQuery}`);
+    const returnedProjectData = projectSearchResponse.data;
+    const projectNames = [];
+
+    for (const projectName of returnedProjectData) {
+      projectNames.push(projectName);
+    }
+    setProjectSearchData(projectNames);
+  };
   // Whenever this state changes, components will notice and redirect to login
   const logoutAndRedirect = () => {
     localStorage.removeItem('githubUsername');
@@ -139,14 +195,17 @@ const Navbar = () => {
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
-            <InputBase
-              placeholder="Search"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
+            <SearchContext.Provider value={searchContext}>
+              <InputBase
+                placeholder="Search"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+                onChange={handleSearchInput}
+              />
+            </SearchContext.Provider>
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
